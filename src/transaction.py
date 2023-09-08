@@ -1,6 +1,7 @@
 import json
 import datetime
 import hashlib
+from block1 import processed_transaction
 
 class Transaction_info:
     
@@ -26,6 +27,7 @@ class Transaction_info:
 
     print("Project 1 by Group 3")
     height=0
+    previous_file_name=[2]
     while(True):
         print("--- Menu ---")
         print("1. Add Transaction")
@@ -53,12 +55,17 @@ class Transaction_info:
         folder_name="/workspaces/BlockChain_cs646/pending/"
         file_name=hashlib.sha256(Data_str.encode('utf-8')).hexdigest()
 
-
-        
         with open(folder_name+file_name+".json","w") as f:
             json.dump(Data,f,indent=None)
         
-        #call block.py here and send the hash of the file to it
-
+        if height==0:
+            previous_file_name[0]=file_name
+        else:
+            previous_file_name[0]=previous_file_name[1]
+            previous_file_name[1]=file_name
+        #calling block.py here and sending the hash of the file to it
+        new_block=processed_transaction(height,file_name,str(previous_file_name[0]))
+        new_block.process()
+        height+=1
 
         

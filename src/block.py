@@ -15,12 +15,12 @@ from dataclasses import dataclass
 # Hash of the Block Body for the current block 
 # When the file is saved, hash the header content only and use the resulting hash as the name of the file. 
 
-@dataclass
-class Block:
-    header: dict[str:str]
-    body: dict[str:list[dict]]
+# @dataclass
+# class Block:
+#     header: dict[str:str]
+#     body: dict[str:list[dict]]
 
-class processed_transaction:
+class Block:
     
     def __init__(self,Height,Timestamp,Previous, Hash):
         self.height=Height
@@ -43,7 +43,6 @@ class processed_transaction:
     #   -https://bobbyhadz.com/blog/python-typeerror-strings-must-be-encoded-before-hashing
 
 
-        
     folder_name="/workspaces/BlockChain_cs646/pending/"
     Height=0
     current_time=datetime.datetime.now()
@@ -51,12 +50,12 @@ class processed_transaction:
     if(Height==0):
         Previous="NA"
     else: 
-        Previous=self.Previous
+        Previous=Previous
         
     body_list=[]
 
-    with open(folder_name+file_name+".json","r") as f:
-        body_dict={"hash":file_name,"content":f}
+    with open(folder_name+Previous+".json","r") as f:
+        body_dict={"hash":Previous,"content":f}
         body_list.append(body_dict)
         print(body_dict)
     #copy the this file into the processed folder and delete the file from pending
@@ -78,8 +77,6 @@ class processed_transaction:
     Header_str=Header_str.replace(" ","")
     blocks="/workspaces/BlockChain_cs646/blocks/"
     file_name=hashlib.sha256(Header_str.encode('utf-8')).hexdigest()
-
-    block=Block(header=header,body=body)
     
     with open(blocks+file_name+".json","w") as f:
         json.dump(Header_str,f,indent=None)
