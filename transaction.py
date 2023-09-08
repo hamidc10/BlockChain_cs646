@@ -3,6 +3,7 @@ import datetime
 import hashlib
 
 class Transaction_info:
+    
     def __init__(self,Timestamp,From,To,Amount):
         self.Timestamp=Timestamp
         self.From=From
@@ -14,20 +15,7 @@ class Transaction_info:
     # Used this for help with JSON writing to file:
     #    -https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
 
-    From=input("From who:")
-    To=input("To who:")
-    Amount=input("What is the amount:")
-    current_time=datetime.datetime.now()
-    Timestamp=int(datetime.datetime.timestamp(current_time))
-
-
-    Data={
-        "Timestamp":Timestamp,
-        "From":From,
-        "To":To,
-        "Amount":Amount
-    }
-
+    
     # Before we save the file we need to hash it by using SHA256
     # I took the dictionary and make it into a str with no space then I can hash it using hashlib library
     # After we hash it, The file for the JSON will be saved as hash we created
@@ -36,13 +24,39 @@ class Transaction_info:
     # I had an error with "String must be encoded" found this to help
     #   -https://bobbyhadz.com/blog/python-typeerror-strings-must-be-encoded-before-hashing
 
-    Data_str=str(Data)
-    Data_str=Data_str.replace(" ","")
-    file_name=hashlib.sha256(Data_str.encode('utf-8')).hexdigest()
+    print("Project 1 by Group 3")
+    height=0
+    while(True):
+        print("--- Menu ---")
+        print("1. Add Transaction")
+        print("2. Exit")
+        choice=input("Input # of your choice:")
+        
+        if(choice=="2"):
+            exit(1)
+        
+        From=input("From who:")
+        To=input("To who:")
+        Amount=input("What is the amount:")
+        current_time=datetime.datetime.now()
+        Timestamp=int(datetime.datetime.timestamp(current_time))
+        
+        Data={
+            "Timestamp":Timestamp,
+            "From":From,
+            "To":To,
+            "Amount":Amount
+        }
 
-    
-    with open(file_name+".json","w") as f:
-        json.dump(Data,f,indent=None)
-       
+        Data_str=str(Data)
+        Data_str=Data_str.replace(" ","")
+        folder_name="/workspaces/BlockChain_cs646/pending_transaction/"
+        file_name=hashlib.sha256(Data_str.encode('utf-8')).hexdigest()
+
+
+        
+        with open(folder_name+file_name+".json","w") as f:
+            json.dump(Data,f,indent=None)
         
 
+        

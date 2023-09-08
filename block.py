@@ -1,7 +1,8 @@
 import datetime
 import json
 import hashlib
-
+import os
+from dataclasses import dataclass
 
 
 # TASK for Block file
@@ -14,9 +15,25 @@ import hashlib
 # Hash of the Block Body for the current block 
 # When the file is saved, hash the header content only and use the resulting hash as the name of the file. 
 
+@dataclass
+class Block:
+    header: dict[str:str]
+    body: dict[str:list[dict]]
+
+class processed_transaction:
+    def __init__(self,Block):
+        self.block = Block
+
+    path_to_pending="/workspaces/BlockChain_cs646/pending_transaction/"
+    blocks=list
+
+    for file_name in os.listdir(path_to_pending):
+        print(file_name.split(".")[0])
+
+
 
 #Used this to help me understand the different terminologies: https://www.geeksforgeeks.org/important-blockchain-terminologies/?ref=gcse
-class Block:
+'''class Block:
     def __init__(self):
         self.chain = list()
         genesis_block = None
@@ -31,21 +48,4 @@ class Block:
         return block
     
     def hash(self, block):
-        hashlib.sha256(Data_str.encode('utf-8')).hexdigest()
-
-    
-
-
-
- 
-    
-
-
-
-    
-
-
-
- 
-    
-
+        hashlib.sha256(Data_str.encode('utf-8')).hexdigest()'''
