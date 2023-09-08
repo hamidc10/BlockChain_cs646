@@ -50,7 +50,7 @@ class Transaction_info:
 
         Data_str=str(Data)
         Data_str=Data_str.replace(" ","")
-        folder_name="/workspaces/BlockChain_cs646/pending_transaction/"
+        folder_name="/workspaces/BlockChain_cs646/pending/"
         file_name=hashlib.sha256(Data_str.encode('utf-8')).hexdigest()
 
 
@@ -58,5 +58,7 @@ class Transaction_info:
         with open(folder_name+file_name+".json","w") as f:
             json.dump(Data,f,indent=None)
         
+        #call block.py here and send the hash of the file to it
+
 
         

@@ -44,7 +44,7 @@ class processed_transaction:
 
 
         
-    folder_name="/workspaces/BlockChain_cs646/pending_transaction/"
+    folder_name="/workspaces/BlockChain_cs646/pending/"
     Height=0
     current_time=datetime.datetime.now()
     Timestamp=int(datetime.datetime.timestamp(current_time))
@@ -59,7 +59,8 @@ class processed_transaction:
         body_dict={"hash":file_name,"content":f}
         body_list.append(body_dict)
         print(body_dict)
-    
+    #copy the this file into the processed folder and delete the file from pending
+    #https://stackoverflow.com/questions/123198/how-to-copy-files
     body={"body":body_list}
     Body_str=str(body)
     Body_str=Body_str.replace(" ","")
@@ -78,6 +79,7 @@ class processed_transaction:
     blocks="/workspaces/BlockChain_cs646/blocks/"
     file_name=hashlib.sha256(Header_str.encode('utf-8')).hexdigest()
 
+    block=Block(header=header,body=body)
     
     with open(blocks+file_name+".json","w") as f:
         json.dump(Header_str,f,indent=None)
