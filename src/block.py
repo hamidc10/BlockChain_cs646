@@ -100,5 +100,6 @@ class Block:
         #  printing block to terminal IF enabled
         # yes_list=["Yes","yes","y","Y"]
         # if self.print_block in yes_list:
+        # Made regex to check for captial or lower case y since in NLP and wanted to implement something I learned
         if re.match(r'^[yY]+',self.print_block):
             print("\nNew Block:\n",json.dumps(block,indent=3))
