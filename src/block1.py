@@ -4,7 +4,8 @@ import hashlib
 import os
 from dataclasses import dataclass
 
-
+import shutil
+ 
 # TASK for Block file
 # Similar to a transaction, a block should be treated as an object that can be stored as a .json file. 
 # The block should be made up of two main parts, a header and a body.  The body should include a list/array of transactions included in the block.  
@@ -43,20 +44,29 @@ class processed_transaction:
     # Used this to help me understand the different terminologies: https://www.geeksforgeeks.org/important-blockchain-terminologies/?ref=gcse
 
     def process(self):
-        folder_name="../pending/"
+        source="./pending/"
         current_time=datetime.datetime.now()
         Timestamp=int(datetime.datetime.timestamp(current_time))
         body_list=[]
-
-        with open(folder_name + self.current_file + ".json","r") as f:
-            body_dict={"hash":self.current_file,"content":f.read()}
-            body_list.append(body_dict)
-            print(body_dict)
+        destination = './processed'
+        
+        # gather all files
+        allfiles = os.listdir(source)
+        
+        # iterate on all files to move them to destination folder
+        for file in allfiles:
+            with open(source+file,"r") as f:
+                body_dict={"hash":self.current_file,"content":f.read()}
+                body_list.append(body_dict)
+                print(body_dict)
+                src_path = os.path.join(source, file)
+                dst_path = os.path.join(destination, file)
+                shutil.move(src_path, dst_path)    
 
         if(self.height==0):
             self.previousblock="NA"
         else:  
-            with open(folder_name + self.previousblock + ".json","r") as f:
+            with open(source + self.previousblock + ".json","r") as f:
                 body_dict={"hash":self.previousblock,"content":f.read()}
                 body_list.append(body_dict)
                 print(body_dict)
@@ -78,7 +88,7 @@ class processed_transaction:
         header={"header":header_dict}
         Header_str=str(header)
         Header_str=Header_str.replace(" ","")
-        blocks="../blocks/"
+        blocks="./blocks/"
         file_name=hashlib.sha256(Header_str.encode('utf-8')).hexdigest()
 
         
