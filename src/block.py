@@ -17,12 +17,9 @@ import shutil
 
 
 class processed_transaction:
-    
     def __init__(self):
         self.file_list = []
-
-    def add_transaction(self, file_name):
-        self.file_list.append(file_name)
+        self.block_list = []
 
     # This gets the input from the transaction.py file
     # Once the data is received it then get put into a dictionary which would be converted to JSON
@@ -38,65 +35,59 @@ class processed_transaction:
     #   -https://bobbyhadz.com/blog/python-typeerror-strings-must-be-encoded-before-hashing
     # Used this to help me understand the different terminologies: https://www.geeksforgeeks.org/important-blockchain-terminologies/?ref=gcse
 
-    def process(self):
-        pending = "../src/pending/"
-        processed = "../src/processed/"
-        blocks = "../src/blocks/"
-        block_list = []
-        for file in self.file_list:
-            # print(file)
-            current_time = datetime.datetime.now()
-            Timestamp = int(datetime.datetime.timestamp(current_time))
-            body_list = []
-            with open(pending + file + ".json", "r") as f:
-                body_dict = {"hash": file, "content": json.loads(f.read())} 
-                # https://www.geeksforgeeks.org/how-to-read-dictionary-from-file-in-python/
-                body_list.append(body_dict)
+    def process(self, file_name):
+        self.file_list.append(file_name)
+        pending = "./src/pending/"
+        processed = "./src/processed/"
+        blocks = "./src/blocks/"
+
+        current_time = datetime.datetime.now()
+        Timestamp = int(datetime.datetime.timestamp(current_time))
+        body_list = []
+        with open(pending + file_name + ".json", "r") as f:
+            body_dict = {"hash": file_name, "content": json.loads(f.read())}
+            # https://www.geeksforgeeks.org/how-to-read-dictionary-from-file-in-python/
+            body_list.append(body_dict)
+
+        height = self.file_list.index(file_name)
+        if height == 0:
+            previousblock = "NA"
+        else:
+            previousblock = self.block_list[height - 1]
+            with open(blocks + previousblock + ".json", "r") as b:
+                body = json.loads(b.read())
+                # Used to help with cleaner function
+                # https://www.learndatasci.com/solutions/python-typeerror-sequence-item-n-expected-string-list-found/
+                # cleaner = map(str, (body["body"]))
+                # body_list.append(",".join(cleaner))
+                body_list.append(body["body"])
                 
-            height = self.file_list.index(file)
-            # print(height)
-            if height == 0:
-                previousblock = "NA"
-            else:
-                previousblock = block_list[height - 1]
-                with open(blocks + previousblock + ".json", "r") as b:
-                    body=json.loads(b.read())
-                    # body_dict = {"hash": self.file_list[height-1], "content": b.read()}
-                    # Used to help with cleaner function
-                    # https://www.learndatasci.com/solutions/python-typeerror-sequence-item-n-expected-string-list-found/
-                    cleaner=(map(str,(body["body"])))
-                    body_list.append(','.join(cleaner))
-                
-            # copy the this file into the processed folder and delete the file from pending
-            # https://stackoverflow.com/questions/123198/how-to-copy-files
-            # body={"body":body_list}
-            body_str = str(body_list)
-            body_str = body_str.replace(" ", "")
-            Hash = hashlib.sha256(body_str.encode("utf-8")).hexdigest()
+        # copy the this file into the processed folder and delete the file from pending
+        # https://stackoverflow.com/questions/123198/how-to-copy-files
+        body_str = str(body_list)
+        body_str = body_str.replace(" ", "")
+        Hash = hashlib.sha256(body_str.encode("utf-8")).hexdigest()
 
-            header_dict = {
-                "height": height,
-                "timestamp": Timestamp,
-                "previousblock": previousblock,
-                "hash": Hash,
-            }
+        header_dict = {
+            "height": height,
+            "timestamp": Timestamp,
+            "previousblock": previousblock,
+            "hash": Hash,
+        }
 
-            # header={"header":header_dict}
-            header_str = str(header_dict)
-            header_str = header_str.replace(" ", "")
-            file_name = hashlib.sha256(header_str.encode("utf-8")).hexdigest()
+        header_str = str(header_dict)
+        header_str = header_str.replace(" ", "")
+        block_name = hashlib.sha256(header_str.encode("utf-8")).hexdigest()
 
-            block = {"header": header_dict, "body": body_list}
-            print(block)
-            
-            with open(blocks + file_name + ".json", "w") as f:
-                json.dump(block, f, indent=None)
+        block = {"header": header_dict, "body": body_list}
+        print(block)
 
-            block_list.append(file_name)
+        with open(blocks + block_name + ".json", "w") as f:
+            json.dump(block, f, indent=None)
 
-            # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
-            src_path = os.path.join(pending, file+".json")
-            dst_path = os.path.join(processed, file+".json")
-            test=shutil.move(src_path, dst_path)
-          
-            
+        self.block_list.append(block_name)
+
+        # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
+        src_path = os.path.join(pending, file_name + ".json")
+        dst_path = os.path.join(processed, file_name + ".json")
+        shutil.move(src_path, dst_path)

@@ -1,7 +1,6 @@
 import json
 import datetime
 import hashlib
-from block1 import processed_transaction
 
 
 class Transaction_info:
@@ -22,18 +21,6 @@ class Transaction_info:
     #   -https://bobbyhadz.com/blog/python-typeerror-strings-must-be-encoded-before-hashing
 
     def new_transaction(self):
-        # print("Project 1 by Group 3")
-        # height = 0
-        # previous_file_name = []*2
-        # while True:
-        #     print("--- Menu ---")
-        #     print("1. Add Transaction")
-        #     print("2. Exit")
-        #     choice = input("Input # of your choice:")
-
-        #     if choice == "2":
-        #         exit(1)
-
         From = input("From who:")
         To = input("To who:")
         Amount = input("What is the amount:")
@@ -44,19 +31,10 @@ class Transaction_info:
 
         Data_str = str(Data)
         Data_str = Data_str.replace(" ", "")
-        folder_name = "../src/pending/"
+        folder_name = "./src/pending/"
         file_name = hashlib.sha256(Data_str.encode("utf-8")).hexdigest()
 
         with open(folder_name + file_name + ".json", "w") as f:
             json.dump(Data, f, indent=None)
 
         return file_name
-        # if height == 0:
-        #     previous_file_name[0] = file_name
-        # else:
-        #     previous_file_name[0] = previous_file_name[1]
-        #     previous_file_name[1] = file_name
-        # # calling block.py here and sending the hash of the file to it
-        # new_block = processed_transaction(height, file_name, str(previous_file_name[0]))
-        # new_block.process()
-        # height += 1
