@@ -1,12 +1,12 @@
-from transaction import Transaction_info
-from block import processed_transaction
+from transaction import Transaction
+from block import Block
 
 
 def main():
     print("Project 1 by Group 3")
     print_block = input("Enable Printing Block Made to Terminal? (Y/n):")
-    transaction = Transaction_info()
-    block = processed_transaction(print_block)
+    transaction = Transaction()
+    block = Block(print_block)
 
     while True:
         print("--- Menu ---")
@@ -16,7 +16,7 @@ def main():
         
         if choice == "1":
             file_name = transaction.new_transaction()
-            block.process(file_name)
+            block.new_block(file_name)
         elif choice == "2":
             exit(1)
 

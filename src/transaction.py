@@ -3,7 +3,7 @@ import datetime
 import hashlib
 
 
-class Transaction_info:
+class Transaction:
     def __init__(self):
         pass
 

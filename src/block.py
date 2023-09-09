@@ -5,7 +5,7 @@ import os
 import shutil
 
 
-class processed_transaction:
+class Block:
 
     """
     TASK for Block file
@@ -26,7 +26,7 @@ class processed_transaction:
         self.block_hash_list = []
         self.print_block = print_block
 
-    def process(self, file_name):
+    def new_block(self, file_name):
         """
         Recieves the file_name that it is to be added to the block.
         Once the data is received it then get put into a dictionary called 'block' as a value to the 'body' key. 
