@@ -2,10 +2,11 @@ from transaction import Transaction
 from block import Block
 
 
+
 # Driver code
 def main():
-    print("Project 1 by Group 3")
-    print_block = input("Enable Printing Block Made to Terminal? (Y/n):")
+    print("Project 1 by Group 3\n")
+    print_block = input("Enable Printing Block Made to Terminal? (Y/n):")   
     transaction = Transaction()
     block = Block(print_block)
 

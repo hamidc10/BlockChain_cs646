@@ -3,6 +3,7 @@ import json
 import hashlib
 import os
 import shutil
+import re
 
 
 class Block:
@@ -38,9 +39,9 @@ class Block:
 
         self.file_hash_list.append(file_name)
 
-        pending = "./src/pending/"
-        processed = "./src/processed/"
-        blocks = "./src/blocks/"
+        pending = "../src/pending/"
+        processed = "../src/processed/"
+        blocks = "../src/blocks/"
 
         current_time = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(current_time))
@@ -97,6 +98,7 @@ class Block:
         shutil.move(src_path, dst_path)
 
         #  printing block to terminal IF enabled
-        yes_list=["Yes","yes","y","Y"]
-        if self.print_block in yes_list:
+        # yes_list=["Yes","yes","y","Y"]
+        # if self.print_block in yes_list:
+        if re.match(r'^[yY]+',self.print_block):
             print("\nNew Block:\n",json.dumps(block,indent=3))
