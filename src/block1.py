@@ -16,10 +16,10 @@ import shutil
 # Hash of the Block Body for the current block 
 # When the file is saved, hash the header content only and use the resulting hash as the name of the file. 
 
-@dataclass
-class Block:
-    header: dict[str:str]
-    body: dict[str:list[dict]]
+# @dataclass
+# class Block:
+#     header: dict{str:str}
+#     body: dict[str:list[dict]]
 
 class processed_transaction:
     
@@ -73,8 +73,8 @@ class processed_transaction:
 
         #copy the this file into the processed folder and delete the file from pending
         #https://stackoverflow.com/questions/123198/how-to-copy-files
-        body={"body":body_list}
-        body_str=str(body)
+        # body={"body":body_list}
+        body_str=str(body_list)
         body_str=body_str.replace(" ","")
         Hash=hashlib.sha256(body_str.encode('utf-8')).hexdigest()
         
@@ -85,14 +85,15 @@ class processed_transaction:
             "hash":Hash
         }
 
-        header={"header":header_dict}
-        Header_str=str(header)
-        Header_str=Header_str.replace(" ","")
+        # header={"header":header_dict}
+        header_str=str(header_dict)
+        header_str=header_str.replace(" ","")
         blocks="./blocks/"
-        file_name=hashlib.sha256(Header_str.encode('utf-8')).hexdigest()
+        file_name=hashlib.sha256(header_str.encode('utf-8')).hexdigest()
 
-        
-        block=str(Block(header=header,body=body))
+        block={"header":header_dict,"body":body_list}
+        block=str(block)
+        # block=str(Block(header=header,body=body))
         block=block.replace(" ","")
 
         with open(blocks + file_name + ".json","w") as f:
