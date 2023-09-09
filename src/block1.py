@@ -43,13 +43,13 @@ class processed_transaction:
     # Used this to help me understand the different terminologies: https://www.geeksforgeeks.org/important-blockchain-terminologies/?ref=gcse
 
     def process(self):
-        folder_name="/workspaces/BlockChain_cs646/pending/"
+        folder_name="../pending/"
         current_time=datetime.datetime.now()
         Timestamp=int(datetime.datetime.timestamp(current_time))
         body_list=[]
 
         with open(folder_name + self.current_file + ".json","r") as f:
-            body_dict={"hash":self.current_file,"content":f}
+            body_dict={"hash":self.current_file,"content":f.read()}
             body_list.append(body_dict)
             print(body_dict)
 
@@ -57,7 +57,7 @@ class processed_transaction:
             self.previousblock="NA"
         else:  
             with open(folder_name + self.previousblock + ".json","r") as f:
-                body_dict={"hash":self.previousblock,"content":f}
+                body_dict={"hash":self.previousblock,"content":f.read()}
                 body_list.append(body_dict)
                 print(body_dict)
 
@@ -78,7 +78,7 @@ class processed_transaction:
         header={"header":header_dict}
         Header_str=str(header)
         Header_str=Header_str.replace(" ","")
-        blocks="/workspaces/BlockChain_cs646/blocks/"
+        blocks="../blocks/"
         file_name=hashlib.sha256(Header_str.encode('utf-8')).hexdigest()
 
         

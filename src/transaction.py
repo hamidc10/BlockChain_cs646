@@ -52,7 +52,7 @@ class Transaction_info:
 
         Data_str=str(Data)
         Data_str=Data_str.replace(" ","")
-        folder_name="/workspaces/BlockChain_cs646/pending/"
+        folder_name="../pending/"
         file_name=hashlib.sha256(Data_str.encode('utf-8')).hexdigest()
 
         with open(folder_name+file_name+".json","w") as f:
