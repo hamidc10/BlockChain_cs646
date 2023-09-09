@@ -84,9 +84,7 @@ class Block:
         block_name = hashlib.sha256(header_str.encode("utf-8")).hexdigest()
 
         block = {"header": header_dict, "body": body_list}
-        if self.print_block == "Y":
-            print("\nNew Block:\n",json.dumps(block,indent=3))
-
+        
         with open(blocks + block_name + ".json", "w") as new_block:
             json.dump(block, new_block, indent=None)
 
@@ -97,3 +95,8 @@ class Block:
         src_path = os.path.join(pending, file_name + ".json")
         dst_path = os.path.join(processed, file_name + ".json")
         shutil.move(src_path, dst_path)
+
+        #  printing block to terminal IF enabled
+        yes_list=["Yes","yes","y","Y"]
+        if self.print_block in yes_list:
+            print("\nNew Block:\n",json.dumps(block,indent=3))
