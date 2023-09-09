@@ -13,15 +13,16 @@ def main():
         print("1. Add Transaction")
         print("2. Done")
         choice = input("Input # of your choice:")
-
+        if choice =="1":
+            n_t=transaction.new_transaction()
+            block.add_transaction(n_t)
+            t=1
         if choice == "2":
             if t:
                 block.process()
             exit(1)
         
-        n_t=transaction.new_transaction()
-        block.add_transaction(n_t)
-        t=1
+       
     
 
 
