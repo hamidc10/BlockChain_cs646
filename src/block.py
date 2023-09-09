@@ -63,7 +63,7 @@ class Block:
             #  Appending body of previous block to body of current block.
             with open(blocks + previousblock_hash + ".json", "r") as b:
                 body = json.loads(b.read())
-                body_list.append(body["body"])
+                body_list.append(body["body"][0])
 
         body_str = str(body_list)
         body_str = body_str.replace(" ", "")
@@ -85,7 +85,7 @@ class Block:
 
         block = {"header": header_dict, "body": body_list}
         if self.print_block == "Y":
-            print("\nNew Block:", block)
+            print("\nNew Block:\n",json.dumps(block,indent=3))
 
         with open(blocks + block_name + ".json", "w") as new_block:
             json.dump(block, new_block, indent=None)

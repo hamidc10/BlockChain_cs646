@@ -24,9 +24,9 @@ class Transaction:
 
         """
 
-        From = input("From who:")
-        To = input("To who:")
-        Amount = input("What is the amount:")
+        From = input("From who: ")
+        To = input("To who: ")
+        Amount = input("Amount: ")
         current_time = datetime.datetime.now()
         Timestamp = int(datetime.datetime.timestamp(current_time))
 
