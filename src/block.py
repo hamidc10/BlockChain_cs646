@@ -22,14 +22,14 @@ class Block:
     """
 
     def __init__(self, print_block):
-        self.file_hash_list = [] 
+        self.file_hash_list = []
         self.block_hash_list = []
         self.print_block = print_block
 
     def new_block(self, file_name):
         """
         Recieves the file_name that it is to be added to the block.
-        Once the data is received it then get put into a dictionary called 'block' as a value to the 'body' key. 
+        Once the data is received it then get put into a dictionary called 'block' as a value to the 'body' key.
         The block is then converted to JSON.
         Used this for help with JSON writing to file:
         -https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
@@ -85,7 +85,7 @@ class Block:
 
         block = {"header": header_dict, "body": body_list}
         if self.print_block == "Y":
-            print(block)
+            print("\nNew Block:", block)
 
         with open(blocks + block_name + ".json", "w") as new_block:
             json.dump(block, new_block, indent=None)

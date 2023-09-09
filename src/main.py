@@ -1,7 +1,8 @@
 from transaction import Transaction
 from block import Block
 
-# Driver code 
+
+# Driver code
 def main():
     print("Project 1 by Group 3")
     print_block = input("Enable Printing Block Made to Terminal? (Y/n):")
@@ -9,11 +10,11 @@ def main():
     block = Block(print_block)
 
     while True:
-        print("--- Menu ---")
+        print("\n--- Menu ---")
         print("1. Add Transaction")
         print("2. Exit")
         choice = input("Input # of your choice:")
-        
+
         if choice == "1":
             file_name = transaction.new_transaction()
             block.new_block(file_name)
