@@ -1,3 +1,8 @@
+# We (Hamid, Chantel, Vira, Trey, Xavier) declare that we have completed this computer code in accordance with the UAB Academic Integrity Code and the UAB CS Honor Code.
+# We have read the UAB Academic Integrity Code and understand that any breach of the Code may result in severe penalties.
+# Student initials: HC, CRW, VVS, TC, XM
+# Date: 9/10/23
+
 import datetime
 import json
 import hashlib
@@ -85,7 +90,7 @@ class Block:
         block_name = hashlib.sha256(header_str.encode("utf-8")).hexdigest()
 
         block = {"header": header_dict, "body": body_list}
-        
+
         with open(blocks + block_name + ".json", "w") as new_block:
             json.dump(block, new_block, indent=None)
 
@@ -101,5 +106,5 @@ class Block:
         # yes_list=["Yes","yes","y","Y"]
         # if self.print_block in yes_list:
         # Made regex to check for captial or lower case y since in NLP and wanted to implement something I learned
-        if re.match(r'^[yY]+',self.print_block):
-            print("\nNew Block:\n",json.dumps(block,indent=3))
+        if re.match(r"^[yY]+", self.print_block):
+            print("\nNew Block:\n", json.dumps(block, indent=3))
