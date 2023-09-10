@@ -1,1 +1,4 @@
 __pycache__/
+src/blocks/*.json
+src/pending/*.json
+src/processed/*.json
