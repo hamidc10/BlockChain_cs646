@@ -45,7 +45,7 @@ Note: Our code considers a chain as all the transactions that occur while the co
 main.py -
     This is the driver code. 
     It first asks the user if they want to print the block that has been created to the terminal. The block is printed as a json.
-    It then displays a menu until the user chooses the option to exit or they explicitly exits the code themselves.
+    It then displays a menu until the user chooses the option to exit or they explicitly exit the code themselves.
     
     Menu options:
       1. Add Transaction
