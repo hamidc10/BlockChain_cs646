@@ -4,7 +4,7 @@
 ###### By: Hamid Choucha, Chantel Rose Walia, Xavier Martinez, Vira Shankar, Trey Carroll 
   
 ---------------------------------------------------------------------------------------------------
-## *DISCLAIMER*
+#### *DISCLAIMER*
 
 An issue can appear when running this code on GIT HUB Workspace VS a normal Python environment like (VS code) for the file path
     
