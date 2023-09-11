@@ -44,10 +44,10 @@ Once everything is there you go back to the terminal and run Python3 main.py or 
 *Note: Our code considers a chain as all the transactions that occur while the code is running. When the code is exited, a new chain starts.*
 
 
-### EXPLANATION OF THE PYTHON FILES 
+## EXPLANATION OF THE PYTHON FILES 
 
 
-#### main.py
+### main.py
 This is the driver code. 
 It first asks the user if they want to print the block that has been created to the terminal. The block is printed as a json.
 It then displays a menu until the user chooses the option to exit or they explicitly exit the code themselves.
@@ -63,7 +63,7 @@ This file name is then sent to ```block.py``` for processing.
 Selecting option 2 exits the code.
 
 
-#### transaction.py
+### transaction.py
 The goal of the transaction code is to get information that is required for creating a hash file that can be used to create a block.
 The code asks the user to input the following information:
 1. Who is the transaction from?
@@ -73,7 +73,7 @@ The code asks the user to input the following information:
 
 Once the code has all the information required it then turns the following into a JSON dictionary object. The code then 
 used that object using a hash library to perform the SHA-256 hashing algorithm on it. 
-The code then adds the file to the /*pending/* folder.
+The code then adds the file to the *pending* folder.
 In the end it returns the name of the transaction file that has been created from the hash.
 
 Links used:
@@ -81,7 +81,7 @@ Links used:
 2. https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
 
 
-#### block.py 
+### block.py 
 Important variables/components:
 - File_list: list of hashes that were used as the transaction file name and inputed to the block as a parameter.
 - Block_list: list of hash that were used as the block file name.
@@ -98,14 +98,14 @@ Important variables/components:
 The goal of the block code is to get the transaction information and hash to create what is called a block. 
 The block has a header component and a body component. The code recieves the file name of the Transaction that 
 has to be added to a block, the file is added to a file_list that keeps track of all transactions in a chain. 
-Once the code receives the file name it then extracts the file from the */pending/* folder and its content is added to the body component.
+Once the code receives the file name it then extracts the file from the *pending* folder and its content is added to the body component.
 Then the code checks for a prevous block in a block_list that it maintains. Based on the size of the list a height for the new block is determined, 
 as well as being assigned to the 'previousblock' component of the header. 
-The previous blocks body is also read from the block file in the */blocks/* folder and then added to the body component.   
+The previous blocks body is also read from the block file in the *blocks* folder and then added to the body component.   
 The code then creates the header component of the block. The header is then hashed and this will be used as the file name for the block. 
 This hash is also added to the block_list.
-Once the header and body have been made, the block is formed and added to a file : header_hash.json in the */blocks/* folder.
-In the end the transaction that was just processed is moved from the */pending/* folder to the */processed/* folder.
+Once the header and body have been made, the block is formed and added to a file : header_hash.json in the *blocks* folder.
+In the end the transaction that was just processed is moved from the *pending* folder to the *processed* folder.
 
 **Links used:**
 1. https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
