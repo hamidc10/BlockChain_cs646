@@ -6,7 +6,7 @@
 ---------------------------------------------------------------------------------------------------
 #### *DISCLAIMER*
 
-An issue can appear when running this code on GIT HUB Workspace VS a normal Python environment like (VS code) for the file path
+An issue can appear when running this code on GITHUB Codespaces VS a normal Python environment like (VS code) for the file path
     
 If you are using workspace then change the file path in Block.py to this ON LINES 47-49 and in transaction.py ON LINE 44:
 * block.py
