@@ -1,6 +1,7 @@
 
 # Group 3
 
+####
   --------------------------------------------------------------------------------------
   | by: Hamid Choucha, Chantel Rose Walia, Xavier Martinez, Vira Shankar, Trey Carroll |
   --------------------------------------------------------------------------------------
@@ -25,15 +26,15 @@ An issue can appear when running this code on GIT HUB Workspace VS a normal Pyth
             -folder_name = "../src/pending/"
 
 
-## How to run the code:
+## HOW TO RUN THE CODE
 Open up your terminal and get to the folder called: "src"
 Then make sure that inside you find:
-    -block.py
-    -transaction.py
-    -main.py
-    -Folder called: "pending"
-    -Folder called: "block"
-    -Folder called: "processed"
+    * block.py 
+    * transaction.py
+    * main.py
+    * Folder called: "pending"
+    * Folder called: "block"
+    * Folder called: "processed"
 
 Once everything is there you go back to the terminal and run Python3 main.py or Python main.py:
     The user will be prompted if they want to have the code print the block in the terminal or not by typing either (yes or no...)
@@ -42,7 +43,7 @@ Once everything is there you go back to the terminal and run Python3 main.py or 
 
 Note: Our code considers a chain as all the transactions that occur while the code is running. When the code is exited, a new chain starts.
 
-## EXPLANATION OF THE PYTHON FILES 
+### EXPLANATION OF THE PYTHON FILES 
 
 main.py :-
     This is the driver code. 
