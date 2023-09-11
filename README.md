@@ -27,10 +27,9 @@ An issue can appear when running this code on GIT HUB Workspace VS a normal Pyth
 
 
 ## HOW TO RUN THE CODE
-Open up your terminal and get to the folder called: "src"
+Open up your terminal and get to the folder called: */src/*
 
 Then make sure that inside you find:
-
     * block.py 
     * transaction.py
     * main.py
@@ -39,7 +38,6 @@ Then make sure that inside you find:
     * Folder called: "processed"
 
 Once everything is there you go back to the terminal and run Python3 main.py or Python main.py:
-    
     * The user will be prompted if they want to have the code print the block in the terminal or not by typing either (yes or no...)
     * Then the user will select to make a transaction by choosing choice one where they type in the following information that was asked by the code in the terminal.
     * Once the user has created the transactions desired then they can choose choice 2 to exit out of the code.
