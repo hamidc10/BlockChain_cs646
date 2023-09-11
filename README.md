@@ -8,7 +8,7 @@
 
 An issue can appear when running this code on GITHUB Codespaces VS a normal Python environment like (VS code) for the file path
     
-If you are using codespaces then change the file path in Block.py to this ON LINES 47-49 and in transaction.py ON LINE 44:
+If you are using codespaces then change the file path in block.py to this ON LINES 47-49 and in transaction.py ON LINE 44:
 * block.py
     - pending = "./src/pending/"
     - processed = "./src/processed/"
@@ -16,7 +16,7 @@ If you are using codespaces then change the file path in Block.py to this ON LIN
 * transaction.py
     - folder_name = "./src/pending/"
 
-If you are using something like VScode then change the file path in Block.py to this ON LINES 47-49 and in transaction.py ON LINE 44:
+If you are using something like VScode then change the file path in block.py to this ON LINES 47-49 and in transaction.py ON LINE 44:
 * block.py
     - pending = "../src/pending/"
     - processed = "../src/processed/"
