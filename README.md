@@ -28,15 +28,15 @@ If you are using something like VScode then change the file path in Block.py to 
 
 
 ## HOW TO RUN THE CODE
-Open up your terminal and get to the folder called: */src/*
+Open up your terminal and get to the folder called: /*src*/
 
 Then make sure that inside you find:
-* block.py 
-* transaction.py
-* main.py
-* Folder called: "pending"
-* Folder called: "block"
-* Folder called: "processed"
+- block.py 
+- transaction.py
+- main.py
+- Folder called: "pending"
+- Folder called: "block"
+- Folder called: "processed"
 
 Once everything is there you go back to the terminal and run Python3 main.py or Python main.py:
 * The user will be prompted if they want to have the code print the block in the terminal or not by typing either (yes or no...)
