@@ -1,7 +1,7 @@
 # We (Hamid, Chantel, Vira, Trey, Xavier) declare that we have completed this computer code in accordance with the UAB Academic Integrity Code and the UAB CS Honor Code.
 # We have read the UAB Academic Integrity Code and understand that any breach of the Code may result in severe penalties.
 # Student initials: HC, CRW, VVS, TC, XM
-# Date: 9/10/23
+# Date: 10/1/23
 
 import datetime
 import json
@@ -10,7 +10,15 @@ import os
 import shutil
 import re
 
+from account_state import init_account_state, load_account_state, save_account_state
+from constants import (
+    pending_transactions_folder,
+    processed_transactions_folder,
+    blocks_folder,
+)
 
+
+# TODO: adjust this to validate transactions and update the account state file
 class Block:
 
     """
@@ -32,21 +40,16 @@ class Block:
         self.block_hash_list = []
         self.print_block = print_block
 
-    def new_block(self, file_name):
+    def new_block(self, transaction_hash: str):
         """
-        Recieves the file_name that it is to be added to the block.
-        Once the data is received it then get put into a dictionary called 'block' as a value to the 'body' key.
+        Receives the file_name that is to be added to the block.
+        Once the data is received it then gets put into a dictionary called 'block' as a value to the 'body' key.
         The block is then converted to JSON.
         Used this for help with JSON writing to file:
-        -https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
-
+        https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
         """
 
-        self.file_hash_list.append(file_name)
-
-        pending = "../src/pending/"
-        processed = "../src/processed/"
-        blocks = "../src/blocks/"
+        self.file_hash_list.append(transaction_hash)
 
         current_time = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(current_time))
@@ -56,18 +59,18 @@ class Block:
         # https://www.geeksforgeeks.org/how-to-read-dictionary-from-file-in-python/
 
         # Creating the body for the block based on the current transaction.
-        with open(pending + file_name + ".json", "r") as f:
-            body_dict = {"hash": file_name, "content": json.loads(f.read())}
+        with open(pending_transactions_folder + transaction_hash + ".json", "r") as f:
+            body_dict = {"hash": transaction_hash, "content": json.loads(f.read())}
             body_list.append(body_dict)
 
-        height = self.file_hash_list.index(file_name)
+        height = self.file_hash_list.index(transaction_hash)
         if height == 0:
             previousblock_hash = "NA"
         else:
             previousblock_hash = self.block_hash_list[height - 1]
 
             #  Appending body of previous block to body of current block.
-            with open(blocks + previousblock_hash + ".json", "r") as b:
+            with open(blocks_folder + previousblock_hash + ".json", "r") as b:
                 body = json.loads(b.read())
                 body_list.append(body["body"][0])
 
@@ -91,20 +94,19 @@ class Block:
 
         block = {"header": header_dict, "body": body_list}
 
-        with open(blocks + block_name + ".json", "w") as new_block:
+        with open(blocks_folder + block_name + ".json", "w") as new_block:
             json.dump(block, new_block, indent=None)
 
         self.block_hash_list.append(block_name)
 
         # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
         # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
-        src_path = os.path.join(pending, file_name + ".json")
-        dst_path = os.path.join(processed, file_name + ".json")
+        src_path = os.path.join(pending_transactions_folder, transaction_hash + ".json")
+        dst_path = os.path.join(
+            processed_transactions_folder, transaction_hash + ".json"
+        )
         shutil.move(src_path, dst_path)
 
-        #  printing block to terminal IF enabled
-        # yes_list=["Yes","yes","y","Y"]
-        # if self.print_block in yes_list:
-        # Made regex to check for captial or lower case y since in NLP and wanted to implement something I learned
+        # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
         if re.match(r"^[yY]+", self.print_block):
             print("\nNew Block:\n", json.dumps(block, indent=3))
