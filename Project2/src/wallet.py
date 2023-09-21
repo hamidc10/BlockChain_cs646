@@ -20,18 +20,21 @@ class Wallet:
         setting the address, and creating a signature.
         """
         public_key, private_key = rsa.newkeys(1024)
-        
-        public_key_folder_name = "../keys/public_keys/pub"
-        with open(public_key_folder_name + ".pem", "wb") as f:
-            f.write(public_key.save_pkcs1("PEM")) 
-
-        private_key_folder_name = "../keys/private_keys/pub"
-        with open(private_key_folder_name + ".pem", "wb") as f: 
-            f.write(private_key.save_pkcs1("PEM"))
+        public_key_folder_name="../keys/public/"
+        private_key_folder_name="../keys/private/"
+        pem_pb_name="pub"
+        pem_pv_name="pri"
+        if len(os.listdir(public_key_folder_name))!=0:
+            print("boo")
+        else:
+            with open(public_key_folder_name+pem_pb_name+".pem", "wb") as f:
+                    f.write(public_key.save_pkcs1("PEM")) 
+            with open(private_key_folder_name+pem_pv_name+".pem", "wb") as f: 
+                    f.write(private_key.save_pkcs1("PEM"))
             
 
         self.name = name
-       
+
         public_key_file_name = name.replace(" ", "") + "_key.pub"
         public_key_file_path = os.path.join(keys_folder, public_key_file_name)
 
