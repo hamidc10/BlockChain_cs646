@@ -4,7 +4,7 @@
 # Date: 10/1/23
 
 import os
-
+import rsa
 from transaction import new_transaction
 from constants import keys_folder
 
@@ -19,6 +19,15 @@ class Wallet:
         Initializes the wallet by loading/creating keys,
         setting the address, and creating a signature.
         """
+        public_key, private_key = rsa.newkeys(1024)
+
+        with open("../keys/Pub.pem", "wb") as f:
+            f.write(public_key.save_pkcs1("PEM")) 
+
+        with open("../keys/Pri.pem", "wb") as f: 
+            f.write(private_key.save_pkcs1("PEM"))
+            
+
         self.name = name
 
         public_key_file_name = name.replace(" ", "") + "_key.pub"

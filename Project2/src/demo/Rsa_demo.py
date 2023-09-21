@@ -10,8 +10,8 @@ import rsa
 
 public_key, private_key = rsa.newkeys(1024)
 
-with open("C:/Programming Projects/BlockChain_cs646-main/Project2", "wb") as f:
+with open("\Project2\keys", "wb") as f:
     f.write(public_key.save_pkcs1("PEM")) 
 
-with open("C:/Programming Projects/BlockChain_cs646-main/Project2", "wb") as f:
+with open("\Project2\keys", "wb") as f:
     f.write(private_key.save_pkcs1("PEM"))
