@@ -21,10 +21,10 @@ class Wallet:
         """
         public_key, private_key = rsa.newkeys(1024)
 
-        with open("../keys/Pub.pem", "wb") as f:
+        with open("../keys/public_keys/pub.pem", "wb") as f:
             f.write(public_key.save_pkcs1("PEM")) 
 
-        with open("../keys/Pri.pem", "wb") as f: 
+        with open("../keys/private_keys/pri.pem", "wb") as f: 
             f.write(private_key.save_pkcs1("PEM"))
             
 
