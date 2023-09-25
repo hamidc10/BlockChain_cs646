@@ -30,19 +30,19 @@ def main():
             with open(path+"/private.pem", "wb+") as f:
                 f.write(private_key.save_pkcs1("PEM"))
 
-    if not os.path.exists(temp_path+Wallet_folder[0]+"/public.pem") and os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
+    if not os.path.exists(temp_path+Wallet_folder[0]+"/public.pem") or  not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
         with open(temp_path+Wallet_folder[0]+"/public.pem", "wb+") as f:
             f.write(public_key.save_pkcs1("PEM"))
         with open(temp_path+Wallet_folder[0]+"/private.pem", "wb+") as f:
             f.write(private_key.save_pkcs1("PEM"))
 
-    if not os.path.exists(temp_path+Wallet_folder[1]+"/public.pem") and os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
+    if not os.path.exists(temp_path+Wallet_folder[1]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
         with open(temp_path+Wallet_folder[1]+"/public.pem", "wb+") as f:
             f.write(public_key.save_pkcs1("PEM"))
         with open(temp_path+Wallet_folder[1]+"/private.pem", "wb+") as f:
             f.write(private_key.save_pkcs1("PEM"))
 
-    if not os.path.exists(temp_path+Wallet_folder[2]+"/public.pem") and os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
+    if not os.path.exists(temp_path+Wallet_folder[2]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
         with open(temp_path+Wallet_folder[2]+"/public.pem", "wb+") as f:
             f.write(public_key.save_pkcs1("PEM"))
         with open(temp_path+Wallet_folder[2]+"/private.pem", "wb+") as f:
