@@ -7,6 +7,7 @@ from block import Block
 from wallet import Wallet
 import os
 import shutil
+import rsa
 
 # Driver code
 # Updated to test Project 2 requirements with 3 wallets
@@ -15,12 +16,38 @@ def main():
     print_blocks = input("Enable printing blocks to terminal? (y/n): ")
     block = Block(print_blocks)
     source_pth="../Project2/src/wallet.py"
+    temp_path="../Project2/"
+    public_key, private_key = rsa.newkeys(1024)
     Wallet_folder=["Wallet1","Wallet2","Wallet3"]
     for i in Wallet_folder:
         path=os.path.join("../Project2",i)
         if not os.path.exists(path):
             os.mkdir(path)
             shutil.copy(source_pth,path)
+            with open(path+"/public.pem", "wb+") as f:
+                f.write(public_key.save_pkcs1("PEM"))
+
+            with open(path+"/private.pem", "wb+") as f:
+                f.write(private_key.save_pkcs1("PEM"))
+
+    if not os.path.exists(temp_path+Wallet_folder[0]+"/public.pem") and os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
+        with open(temp_path+Wallet_folder[0]+"/public.pem", "wb+") as f:
+            f.write(public_key.save_pkcs1("PEM"))
+        with open(temp_path+Wallet_folder[0]+"/private.pem", "wb+") as f:
+            f.write(private_key.save_pkcs1("PEM"))
+
+    if not os.path.exists(temp_path+Wallet_folder[1]+"/public.pem") and os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
+        with open(temp_path+Wallet_folder[1]+"/public.pem", "wb+") as f:
+            f.write(public_key.save_pkcs1("PEM"))
+        with open(temp_path+Wallet_folder[1]+"/private.pem", "wb+") as f:
+            f.write(private_key.save_pkcs1("PEM"))
+
+    if not os.path.exists(temp_path+Wallet_folder[2]+"/public.pem") and os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
+        with open(temp_path+Wallet_folder[2]+"/public.pem", "wb+") as f:
+            f.write(public_key.save_pkcs1("PEM"))
+        with open(temp_path+Wallet_folder[2]+"/private.pem", "wb+") as f:
+            f.write(private_key.save_pkcs1("PEM"))
+
             
         
   
