@@ -2,11 +2,11 @@
 # We have read the UAB Academic Integrity Code and understand that any breach of the Code may result in severe penalties.
 # Student initials: HC, CRW, VVS, TC, XM
 # Date: 10/1/23
-
 import os
 import rsa
 from transaction import new_transaction
 from constants import keys_folder
+
 
 
 class Wallet:
@@ -16,14 +16,15 @@ class Wallet:
     signature: str
 
 
-    def __init__(self, name: str ):
+    def __init__(self, address: str ):
         """
         Initializes the wallet by loading/creating keys,
         setting the address, and creating a signature.
         """
+        self.address=""
 
-        self.name = name
-        public_key, private_key = rsa.newkeys(1024)
+        # self.name = name
+    
         # wallet_path = "../Project2/wallets/"
         
         # pub_key_pem = "keys/public/"
@@ -42,11 +43,11 @@ class Wallet:
  
        
 
-        public_key_file_name = name.replace(" ", "") + "_key.pub"
-        public_key_file_path = os.path.join(keys_folder, public_key_file_name)
+        # public_key_file_name = name.replace(" ", "") + "_key.pub"
+        # public_key_file_path = os.path.join(keys_folder, public_key_file_name)
 
-        private_key_file_name = name.replace(" ", "") + "_key"
-        public_key_file_path = os.path.join(keys_folder, private_key_file_name)
+        # private_key_file_name = name.replace(" ", "") + "_key"
+        # public_key_file_path = os.path.join(keys_folder, private_key_file_name)
 
         # TODO: check if the user's RSA key files (public and private) exist
         # TODO: if the keys exist, load them

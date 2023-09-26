@@ -4,56 +4,74 @@
 # Date: 10/1/23
 
 from block import Block
-from wallet import Wallet
+# from wallet import Wallet
 import os
 import shutil
 import rsa
+import sys
 
-# Driver code
-# Updated to test Project 2 requirements with 3 wallets
+source_pth="../src/wallet.py"
+temp_path="../Project2/"
+public_key, private_key = rsa.newkeys(1024)
+Wallet_folder=["Wallet1","Wallet2","Wallet3"]
+for i in Wallet_folder:
+    path=os.path.abspath("../"+i)
+    if not os.path.exists(path):
+        os.mkdir(path)
+        shutil.copy(source_pth,path)
+        with open(path+"/public.pem", "wb+") as f:
+            f.write(public_key.save_pkcs1("PEM"))
+
+        with open(path+"/private.pem", "wb+") as f:
+            f.write(private_key.save_pkcs1("PEM"))
+
+# if not os.path.exists(temp_path+Wallet_folder[0]+"/public.pem") or  not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem")or not os.path.exists(temp_path+Wallet_folder[0]+"/__init__.py"):
+#     with open(temp_path+Wallet_folder[0]+"/public.pem", "wb+") as f:
+#         f.write(public_key.save_pkcs1("PEM"))
+#     with open(temp_path+Wallet_folder[0]+"/private.pem", "wb+") as f:
+#         f.write(private_key.save_pkcs1("PEM"))
+#     with open(temp_path+Wallet_folder[0]+"/__init__.py","w") as f:
+#         pass
+        
+
+# if not os.path.exists(temp_path+Wallet_folder[1]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem") or not os.path.exists(temp_path+Wallet_folder[1]+"/__init__.py"):
+#     with open(temp_path+Wallet_folder[1]+"/public.pem", "wb+") as f:
+#         f.write(public_key.save_pkcs1("PEM"))
+#     with open(temp_path+Wallet_folder[1]+"/private.pem", "wb+") as f:
+#         f.write(private_key.save_pkcs1("PEM"))
+#     with open(temp_path+Wallet_folder[1]+"/__init__.py","w") as f:
+#         pass
+
+# if not os.path.exists(temp_path+Wallet_folder[2]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem") or not os.path.exists(temp_path+Wallet_folder[2]+"/__init__.py"):
+#     with open(temp_path+Wallet_folder[2]+"/public.pem", "wb+") as f:
+#         f.write(public_key.save_pkcs1("PEM"))
+#     with open(temp_path+Wallet_folder[2]+"/private.pem", "wb+") as f:
+#         f.write(private_key.save_pkcs1("PEM"))
+#     with open(temp_path+Wallet_folder[2]+"/__init__.py","w") as f:
+#         pass
+
+# # path_1="../Project2/Wallet1"
+# # path_2="../Project2/Wallet2"
+# # path_3="../Project2/Wallet3"
+# # sys.path.append(path_1)
+# # sys.path.append(path_2)
+# # sys.path.append(path_3)
+
+from Wallet1.wallet import Wallet as W1
+from Wallet2.wallet import Wallet as W2
+from Wallet3.wallet import Wallet as W3
+
+
 def main():
     print("Project 2 by Group 3\n")
     print_blocks = input("Enable printing blocks to terminal? (y/n): ")
     block = Block(print_blocks)
-    source_pth="../Project2/src/wallet.py"
-    temp_path="../Project2/"
-    public_key, private_key = rsa.newkeys(1024)
-    Wallet_folder=["Wallet1","Wallet2","Wallet3"]
-    for i in Wallet_folder:
-        path=os.path.join("../Project2",i)
-        if not os.path.exists(path):
-            os.mkdir(path)
-            shutil.copy(source_pth,path)
-            with open(path+"/public.pem", "wb+") as f:
-                f.write(public_key.save_pkcs1("PEM"))
-
-            with open(path+"/private.pem", "wb+") as f:
-                f.write(private_key.save_pkcs1("PEM"))
-
-    if not os.path.exists(temp_path+Wallet_folder[0]+"/public.pem") or  not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
-        with open(temp_path+Wallet_folder[0]+"/public.pem", "wb+") as f:
-            f.write(public_key.save_pkcs1("PEM"))
-        with open(temp_path+Wallet_folder[0]+"/private.pem", "wb+") as f:
-            f.write(private_key.save_pkcs1("PEM"))
-
-    if not os.path.exists(temp_path+Wallet_folder[1]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
-        with open(temp_path+Wallet_folder[1]+"/public.pem", "wb+") as f:
-            f.write(public_key.save_pkcs1("PEM"))
-        with open(temp_path+Wallet_folder[1]+"/private.pem", "wb+") as f:
-            f.write(private_key.save_pkcs1("PEM"))
-
-    if not os.path.exists(temp_path+Wallet_folder[2]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem"):
-        with open(temp_path+Wallet_folder[2]+"/public.pem", "wb+") as f:
-            f.write(public_key.save_pkcs1("PEM"))
-        with open(temp_path+Wallet_folder[2]+"/private.pem", "wb+") as f:
-            f.write(private_key.save_pkcs1("PEM"))
-
             
         
   
-    wallet1 = Wallet("Wallet #1")
-    wallet2 = Wallet("Wallet #2")
-    wallet3 = Wallet("Wallet #3")
+    wallet1 = W1("Wallet #1")
+    wallet2 = W2("Wallet #2")
+    wallet3 = W3("Wallet #3")
     count=0
     
     while True:
@@ -61,69 +79,69 @@ def main():
         print("\n--- Create or Select a wallet ---")
         # print(f"1. {'Create'}")
         # print(f"2. {'View wallets'}")
-        print(f"1. {wallet1.name}")
-        print(f"2. {wallet2.name}")
-        print(f"3. {wallet3.name}")
-        choice = input("Input # of your choice: ")
-        if choice == "1":
-            count+=1
-            # wallet=Wallet(input("Please name the wallet: "))
+        print(f"1. {wallet1.address}")
+        print(f"2. {wallet2.address}")
+        print(f"3. {wallet3.address}")
+        # choice = input("Input # of your choice: ")
+        # if choice == "1":
+        #     count+=1
+        #     # wallet=Wallet(input("Please name the wallet: "))
             
-            selected_wallet = wallet1
-            other_wallets = [wallet2, wallet3]
-        elif choice == "2":
-            selected_wallet=wallet2
-            other_wallets=[wallet1,wallet3]
-        else:
-            selected_wallet=wallet3
-            other_wallets=[wallet1,wallet2]
+        #     selected_wallet = wallet1
+        #     other_wallets = [wallet2, wallet3]
+        # elif choice == "2":
+        #     selected_wallet=wallet2
+        #     other_wallets=[wallet1,wallet3]
+        # else:
+        #     selected_wallet=wallet3
+        #     other_wallets=[wallet1,wallet2]
             
-            # if len(wallet_lst)==0:
-            #     print("\nThere are no wallets")
-            # else:``
-            #     print(f"\n Wallets:")
-            #     for i in wallet_lst:
-            #         print(f"    Wallet owner: {i}")
-            # pick=input(f'Please choose a wallet number:')
-            # if choice == wallet_lst.index(pick):
-            #     print(wallet_lst[int(pick)])
+        #     # if len(wallet_lst)==0:
+        #     #     print("\nThere are no wallets")
+        #     # else:``
+        #     #     print(f"\n Wallets:")
+        #     #     for i in wallet_lst:
+        #     #         print(f"    Wallet owner: {i}")
+        #     # pick=input(f'Please choose a wallet number:')
+        #     # if choice == wallet_lst.index(pick):
+        #     #     print(wallet_lst[int(pick)])
 
         
         
-        print("\n--- Select an action  ---")
-        print("1. Create transaction")
-        print("2. Check your account balance")
-        print("3. Check another account balance")
-        choice = input("Input # of your choice: ")
-        if choice == "1":
-            print("\n--- Select wallet to send to  ---")
-            print(f"1. {other_wallets[0].name}")
-            print(f"2. {other_wallets[1].name}")
-            choice = input("Input # of your choice: ")
-            if choice == "1":
-                to_address = other_wallets[0].address
-            else:
-                to_address = other_wallets[1].address
-            amount = input("Enter the amount you would like to send: ")
-            # Create transaction with wallet
-            transaction_file_path = selected_wallet.send(to_address, int(amount))
-            # Validate transaction on blockchain
-            block.new_block(transaction_file_path)
-        elif choice == "2":
-            balance = selected_wallet.check_balance()
-            print(f"Your account balance ({selected_wallet.name}): {balance}")
-        else:
-            print("\n--- Select wallet to check balance of ---")
-            print(f"1. {other_wallets[0].name}")
-            print(f"2. {other_wallets[1].name}")
-            choice = input("Input # of your choice: ")
-            if choice == "1":
-                other_wallet = other_wallets[0]
-            else:
-                other_wallet = other_wallets[1]
-            # Check balance of other wallet using this wallet
-            balance = selected_wallet.check_balance(other_wallet.address)
-            print(f"Other account balance ({other_wallet.name}): {balance}")
+        # print("\n--- Select an action  ---")
+        # print("1. Create transaction")
+        # print("2. Check your account balance")
+        # print("3. Check another account balance")
+        # choice = input("Input # of your choice: ")
+        # if choice == "1":
+        #     print("\n--- Select wallet to send to  ---")
+        #     print(f"1. {other_wallets[0].name}")
+        #     print(f"2. {other_wallets[1].name}")
+        #     choice = input("Input # of your choice: ")
+        #     if choice == "1":
+        #         to_address = other_wallets[0].address
+        #     else:
+        #         to_address = other_wallets[1].address
+        #     amount = input("Enter the amount you would like to send: ")
+        #     # Create transaction with wallet
+        #     transaction_file_path = selected_wallet.send(to_address, int(amount))
+        #     # Validate transaction on blockchain
+        #     block.new_block(transaction_file_path)
+        # elif choice == "2":
+        #     balance = selected_wallet.check_balance()
+        #     print(f"Your account balance ({selected_wallet.name}): {balance}")
+        # else:
+        #     print("\n--- Select wallet to check balance of ---")
+        #     print(f"1. {other_wallets[0].name}")
+        #     print(f"2. {other_wallets[1].name}")
+        #     choice = input("Input # of your choice: ")
+        #     if choice == "1":
+        #         other_wallet = other_wallets[0]
+        #     else:
+        #         other_wallet = other_wallets[1]
+        #     # Check balance of other wallet using this wallet
+        #     balance = selected_wallet.check_balance(other_wallet.address)
+        #     print(f"Other account balance ({other_wallet.name}): {balance}")
 
 
 if __name__ == "__main__":
