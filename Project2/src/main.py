@@ -10,52 +10,59 @@ import shutil
 import rsa
 import sys
 
-source_pth="../src/wallet.py"
-temp_path="../Project2/"
-public_key, private_key = rsa.newkeys(1024)
+source_pth="wallet.py"
+temp_path=""
+
+
 Wallet_folder=["Wallet1","Wallet2","Wallet3"]
 for i in Wallet_folder:
-    path=os.path.abspath("../"+i)
+    path = os.path.abspath(os.path.join(temp_path, i))
+    public_key,private_key=rsa.newkeys(2048)
+    
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path, exist_ok=True)
         shutil.copy(source_pth,path)
         with open(path+"/public.pem", "wb+") as f:
             f.write(public_key.save_pkcs1("PEM"))
-
         with open(path+"/private.pem", "wb+") as f:
             f.write(private_key.save_pkcs1("PEM"))
 
-# if not os.path.exists(temp_path+Wallet_folder[0]+"/public.pem") or  not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem")or not os.path.exists(temp_path+Wallet_folder[0]+"/__init__.py"):
-#     with open(temp_path+Wallet_folder[0]+"/public.pem", "wb+") as f:
-#         f.write(public_key.save_pkcs1("PEM"))
-#     with open(temp_path+Wallet_folder[0]+"/private.pem", "wb+") as f:
-#         f.write(private_key.save_pkcs1("PEM"))
-#     with open(temp_path+Wallet_folder[0]+"/__init__.py","w") as f:
-#         pass
+W1_path_pb=os.path.join(temp_path,Wallet_folder[0],"/public.pem")
+W2_path_pb=os.path.join(temp_path,Wallet_folder[1],"/public.pem")
+W3_path_pb=os.path.join(temp_path,Wallet_folder[2],"/public.pem")
+
+W1_path_pv=os.path.join(temp_path,Wallet_folder[0],"/private.pem")
+W2_path_pv=os.path.join(temp_path,Wallet_folder[1],"/private.pem")
+W3_path_pv=os.path.join(temp_path,Wallet_folder[2],"/private.pem")
+
+W1_path_py=os.path.join(temp_path,Wallet_folder[0],"/__init__.py")
+W2_path_py=os.path.join(temp_path,Wallet_folder[1],"/__init__.py")
+W3_path_py=os.path.join(temp_path,Wallet_folder[2],"/__init__.py")
+
+if not os.path.exists(W1_path_pb) or  not os.path.exists(W1_path_pv) or not os.path.exists(W1_path_py):
+    with open("Wallet1/public.pem", "wb+") as f:
+        f.write(public_key.save_pkcs1("PEM"))
+    with open("Wallet1/private.pem", "wb+") as f:
+        f.write(private_key.save_pkcs1("PEM"))
+    with open("Wallet1/__init__.py","w") as f:
+        pass
         
+if not os.path.exists(W2_path_pb) or not os.path.exists(W2_path_pv) or not os.path.exists(W2_path_py):
+    with open("Wallet2/public.pem", "wb+") as f:
+        f.write(public_key.save_pkcs1("PEM"))
+    with open("Wallet2/private.pem", "wb+") as f:
+        f.write(private_key.save_pkcs1("PEM"))
+    with open("Wallet2/__init__.py","w") as f:
+        pass
 
-# if not os.path.exists(temp_path+Wallet_folder[1]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem") or not os.path.exists(temp_path+Wallet_folder[1]+"/__init__.py"):
-#     with open(temp_path+Wallet_folder[1]+"/public.pem", "wb+") as f:
-#         f.write(public_key.save_pkcs1("PEM"))
-#     with open(temp_path+Wallet_folder[1]+"/private.pem", "wb+") as f:
-#         f.write(private_key.save_pkcs1("PEM"))
-#     with open(temp_path+Wallet_folder[1]+"/__init__.py","w") as f:
-#         pass
+if not os.path.exists(W3_path_pb) or not os.path.exists(W3_path_pv) or not os.path.exists(W3_path_py):
+    with open("Wallet3/public.pem", "wb+") as f:
+        f.write(public_key.save_pkcs1("PEM"))
+    with open("Wallet3/private.pem", "wb+") as f:
+        f.write(private_key.save_pkcs1("PEM"))
+    with open("Wallet3/__init__.py","w") as f:
+        pass
 
-# if not os.path.exists(temp_path+Wallet_folder[2]+"/public.pem") or not os.path.exists(temp_path+Wallet_folder[0]+"/private.pem") or not os.path.exists(temp_path+Wallet_folder[2]+"/__init__.py"):
-#     with open(temp_path+Wallet_folder[2]+"/public.pem", "wb+") as f:
-#         f.write(public_key.save_pkcs1("PEM"))
-#     with open(temp_path+Wallet_folder[2]+"/private.pem", "wb+") as f:
-#         f.write(private_key.save_pkcs1("PEM"))
-#     with open(temp_path+Wallet_folder[2]+"/__init__.py","w") as f:
-#         pass
-
-# # path_1="../Project2/Wallet1"
-# # path_2="../Project2/Wallet2"
-# # path_3="../Project2/Wallet3"
-# # sys.path.append(path_1)
-# # sys.path.append(path_2)
-# # sys.path.append(path_3)
 
 from Wallet1.wallet import Wallet as W1
 from Wallet2.wallet import Wallet as W2
@@ -69,20 +76,20 @@ def main():
             
         
   
-    wallet1 = W1("Wallet #1")
-    wallet2 = W2("Wallet #2")
-    wallet3 = W3("Wallet #3")
-    count=0
+    wallet1 = W1("Wallet1")
+    wallet2 = W2("Wallet2")
+    wallet3 = W3("Wallet3")
+   
     
     while True:
-        # wallet_lst=os.listdir("../Project2/wallets/")
+       
         print("\n--- Create or Select a wallet ---")
-        # print(f"1. {'Create'}")
-        # print(f"2. {'View wallets'}")
+        print(f"1. {'Create'}")
+        print(f"2. {'View wallets'}")
         print(f"1. {wallet1.address}")
         print(f"2. {wallet2.address}")
         print(f"3. {wallet3.address}")
-        # choice = input("Input # of your choice: ")
+        choice = input("Input # of your choice: ")
         # if choice == "1":
         #     count+=1
         #     # wallet=Wallet(input("Please name the wallet: "))

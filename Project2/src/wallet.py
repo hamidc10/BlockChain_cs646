@@ -6,7 +6,7 @@ import os
 import rsa
 from transaction import new_transaction
 from constants import keys_folder
-
+import hashlib
 
 
 class Wallet:
@@ -16,14 +16,26 @@ class Wallet:
     signature: str
 
 
-    def __init__(self, address: str ):
+    def __init__(self, name: str ):
         """
         Initializes the wallet by loading/creating keys,
         setting the address, and creating a signature.
         """
-        self.address=""
+        self.name = name
 
-        # self.name = name
+        temp=[]
+        with open(f"{self.name}/public.pem","r") as f:
+            temp=f.readlines()
+        
+        prep_address=[]
+        for i in temp:
+            prep_address.append(i.replace("\n",''))
+       
+        temp_str=str(prep_address[1])+str(prep_address[2])+str(prep_address[3])
+        
+        self.address = hashlib.sha256(temp_str.encode("utf-8")).hexdigest()
+
+        
     
         # wallet_path = "../Project2/wallets/"
         
@@ -53,7 +65,6 @@ class Wallet:
         # TODO: if the keys exist, load them
         # TODO: if the keys don't exist, create/save a new RSA public/private key pair for the user
         # TODO: set user address to be the SHA256 hash of the user's public key
-        self.address = ""
         # TODO: set user signature to be the user address signed by the user's private key
         self.signature = ""
 
