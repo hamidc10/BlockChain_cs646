@@ -61,10 +61,10 @@ class Wallet:
         # private_key_file_name = name.replace(" ", "") + "_key"
         # public_key_file_path = os.path.join(keys_folder, private_key_file_name)
 
-        # TODO: check if the user's RSA key files (public and private) exist
-        # TODO: if the keys exist, load them
+     
+    
         # TODO: if the keys don't exist, create/save a new RSA public/private key pair for the user
-        # TODO: set user address to be the SHA256 hash of the user's public key
+        
         # TODO: set user signature to be the user address signed by the user's private key
         self.signature = ""
 
