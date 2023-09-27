@@ -12,7 +12,7 @@ from constants import account_state_file_path
 AccountStateDict = Dict[str, int]
 
 
-# TODO: use this in block.py and wallet.py
+# TODO: use this in block.py
 def load_account_state() -> AccountStateDict:
     with open(account_state_file_path, "r") as f:
         return json.load(f)

@@ -10,6 +10,10 @@ import os
 import shutil
 import re
 
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
+
 from account_state import init_account_state, load_account_state, save_account_state
 from constants import (
     pending_transactions_folder,
@@ -62,6 +66,20 @@ class Block:
         with open(pending_transactions_folder + transaction_hash + ".json", "r") as f:
             body_dict = {"hash": transaction_hash, "content": json.loads(f.read())}
             body_list.append(body_dict)
+
+        # validate transaction signature
+        # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
+        with open(body_dict["PublicKeyFilePath"], "rb") as f:
+            public_key_bytes = f.read()
+        public_key_hash = SHA256.new(public_key_bytes)
+        public_key = RSA.import_key(public_key_bytes)
+        signature = bytes(body_dict["Signature"], "utf-8")
+        try:
+            pkcs1_15.new(public_key).verify(public_key_hash, signature)
+            print("The signature is valid!")
+        except (ValueError, TypeError):
+            print("The signature is not valid!")
+            return
 
         height = self.file_hash_list.index(transaction_hash)
         if height == 0:

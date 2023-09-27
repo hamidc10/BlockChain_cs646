@@ -13,7 +13,11 @@ from constants import pending_transactions_folder
 
 # Note: converted this back to a function because it doesn't really need to be a class
 def new_transaction(
-    from_address: str, to_address: str, amount: int, signature: str
+    from_address: str,
+    to_address: str,
+    amount: int,
+    signature: bytes,
+    public_key_file_path: str,
 ) -> str:
     """
     Creates a transaction file with the given information in the pending folder
@@ -26,7 +30,8 @@ def new_transaction(
         "From": from_address,
         "To": to_address,
         "Amount": amount,
-        "Signature": signature,
+        "Signature": signature.decode(),  # TODO: fix this
+        "PublicKeyFilePath": public_key_file_path,
     }
     data_str = str(data).replace(" ", "")
     data_hash = hashlib.sha256(data_str.encode("utf-8")).hexdigest()
