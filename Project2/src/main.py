@@ -4,88 +4,56 @@
 # Date: 10/1/23
 
 from block import Block
-# from wallet import Wallet
 import os
 import shutil
 import rsa
 import sys
 
-source_pth="wallet.py"
-temp_path=""
-
-
-Wallet_folder=["Wallet1","Wallet2","Wallet3"]
-for i in Wallet_folder:
-    path = os.path.abspath(os.path.join(temp_path, i))
-    
-    if not os.path.exists(path):
-        public_key,private_key=rsa.newkeys(2048)
-        os.makedirs(path, exist_ok=True)
-        shutil.copy(source_pth,path)
-        with open(path+"/public.pem", "wb+") as f:
-            f.write(public_key.save_pkcs1("PEM"))
-        with open(path+"/private.pem", "wb+") as f:
-            f.write(private_key.save_pkcs1("PEM"))
-
-W1_path_pb=os.path.join(temp_path,Wallet_folder[0],"/public.pem")
-W2_path_pb=os.path.join(temp_path,Wallet_folder[1],"/public.pem")
-W3_path_pb=os.path.join(temp_path,Wallet_folder[2],"/public.pem")
-
-W1_path_pv=os.path.join(temp_path,Wallet_folder[0],"/private.pem")
-W2_path_pv=os.path.join(temp_path,Wallet_folder[1],"/private.pem")
-W3_path_pv=os.path.join(temp_path,Wallet_folder[2],"/private.pem")
-
-W1_path_py=os.path.join(temp_path,Wallet_folder[0],"/__init__.py")
-W2_path_py=os.path.join(temp_path,Wallet_folder[1],"/__init__.py")
-W3_path_py=os.path.join(temp_path,Wallet_folder[2],"/__init__.py")
-
-if not os.path.exists(W1_path_pb) or  not os.path.exists(W1_path_pv) or not os.path.exists(W1_path_py):
-    public_key,private_key=rsa.newkeys(2048)
-    with open("Wallet1/public.pem", "wb+") as f:
-        f.write(public_key.save_pkcs1("PEM"))
-    with open("Wallet1/private.pem", "wb+") as f:
-        f.write(private_key.save_pkcs1("PEM"))
-    with open("Wallet1/__init__.py","w") as f:
-        pass
-        
-if not os.path.exists(W2_path_pb) or not os.path.exists(W2_path_pv) or not os.path.exists(W2_path_py):
-    public_key,private_key=rsa.newkeys(2048)
-    with open("Wallet2/public.pem", "wb+") as f:
-        f.write(public_key.save_pkcs1("PEM"))
-    with open("Wallet2/private.pem", "wb+") as f:
-        f.write(private_key.save_pkcs1("PEM"))
-    with open("Wallet2/__init__.py","w") as f:
-        pass
-
-if not os.path.exists(W3_path_pb) or not os.path.exists(W3_path_pv) or not os.path.exists(W3_path_py):
-    public_key,private_key=rsa.newkeys(2048)
-    with open("Wallet3/public.pem", "wb+") as f:
-        f.write(public_key.save_pkcs1("PEM"))
-    with open("Wallet3/private.pem", "wb+") as f:
-        f.write(private_key.save_pkcs1("PEM"))
-    with open("Wallet3/__init__.py","w") as f:
-        pass
-
-
-from Wallet1.wallet import Wallet as W1
-from Wallet2.wallet import Wallet as W2
-from Wallet3.wallet import Wallet as W3
-
 
 def main():
+    source_pth = "wallet.py"
+    Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
+    for wallet in Wallet_folder:
+        if not os.path.exists(wallet):
+            public_key, private_key = rsa.newkeys(2048)
+            os.makedirs(wallet, exist_ok=True)
+            shutil.copy(source_pth, wallet)
+            with open(wallet + "/public.pem", "wb+") as f:
+                f.write(public_key.save_pkcs1("PEM"))
+            with open(wallet + "/private.pem", "wb+") as f:
+                f.write(private_key.save_pkcs1("PEM"))
+        path_pb = os.path.join(wallet, "public.pem")
+        path_pv = os.path.join(wallet, "private.pem")
+        path_py = os.path.join(wallet, "__init__.py")
+        if (
+            not os.path.exists(path_pb)
+            or not os.path.exists(path_pv)
+            or not os.path.exists(path_py)
+        ):
+            public_key, private_key = rsa.newkeys(2048)
+            with open(path_pb, "wb+") as f:
+                f.write(public_key.save_pkcs1("PEM"))
+            with open(path_pv, "wb+") as f:
+                f.write(private_key.save_pkcs1("PEM"))
+            with open(path_py, "w") as f:
+                pass
+    driver()
+
+
+def driver():
+    from Wallet1.wallet import Wallet as W1
+    from Wallet2.wallet import Wallet as W2
+    from Wallet3.wallet import Wallet as W3
+
     print("Project 2 by Group 3\n")
     print_blocks = input("Enable printing blocks to terminal? (y/n): ")
     block = Block(print_blocks)
-            
-        
-  
+
     wallet1 = W1("Wallet1")
     wallet2 = W2("Wallet2")
     wallet3 = W3("Wallet3")
-   
-    
+
     while True:
-       
         print("\n--- Select a wallet ---")
 
         print(f" 1. Wallet 1 address {wallet1.address}")
@@ -93,22 +61,23 @@ def main():
         print(f" 3. Wallet 3 address {wallet3.address}")
         print(f" 4. Create a Wallet")
         choice = input("Input # of your choice: ")
+        
         if choice == "1":
             selected_wallet = wallet1
             other_wallets = [wallet2, wallet3]
         elif choice == "2":
-            selected_wallet=wallet2
-            other_wallets=[wallet1,wallet3]
+            selected_wallet = wallet2
+            other_wallets = [wallet1, wallet3]
         else:
-            selected_wallet=wallet3
-            other_wallets=[wallet1,wallet2]
-            
-    
+            selected_wallet = wallet3
+            other_wallets = [wallet1, wallet2]
+
         print("\n--- Select an action  ---")
         print("1. Create transaction")
         print("2. Check your account balance")
         print("3. Check another account balance")
         choice = input("Input # of your choice: ")
+        
         if choice == "1":
             print("\n--- Select wallet to send to  ---")
             print(f"1. {other_wallets[0].name}")

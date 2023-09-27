@@ -34,37 +34,7 @@ class Wallet:
         temp_str=str(prep_address[1])+str(prep_address[2])+str(prep_address[3])+str(prep_address[4])+str(prep_address[5])+str(prep_address[6])
         
         self.address = hashlib.sha256(temp_str.encode("utf-8")).hexdigest()
-
-        
     
-        # wallet_path = "../Project2/wallets/"
-        
-        # pub_key_pem = "keys/public/"
-        # prv_key_pem = "keys/private/"
-
-        # wallet_path_1="wallets/"+name+"_wallet/"+pub_key_pem
-        # wallet_path_2="wallets/"+name+"_wallet/"+prv_key_pem
-        # os.makedirs(wallet_path_1,exist_ok=True)
-        # os.makedirs(wallet_path_2,exist_ok=True)
-       
-       
-        # if not os.path.exists(wallet_path_1+"/pub.pem"):
-            
-        
-            
- 
-       
-
-        # public_key_file_name = name.replace(" ", "") + "_key.pub"
-        # public_key_file_path = os.path.join(keys_folder, public_key_file_name)
-
-        # private_key_file_name = name.replace(" ", "") + "_key"
-        # public_key_file_path = os.path.join(keys_folder, private_key_file_name)
-
-     
-    
-        # TODO: if the keys don't exist, create/save a new RSA public/private key pair for the user
-        
         # TODO: set user signature to be the user address signed by the user's private key
         self.signature = ""
 
