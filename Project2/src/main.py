@@ -17,9 +17,9 @@ temp_path=""
 Wallet_folder=["Wallet1","Wallet2","Wallet3"]
 for i in Wallet_folder:
     path = os.path.abspath(os.path.join(temp_path, i))
-    public_key,private_key=rsa.newkeys(2048)
     
     if not os.path.exists(path):
+        public_key,private_key=rsa.newkeys(2048)
         os.makedirs(path, exist_ok=True)
         shutil.copy(source_pth,path)
         with open(path+"/public.pem", "wb+") as f:
@@ -40,6 +40,7 @@ W2_path_py=os.path.join(temp_path,Wallet_folder[1],"/__init__.py")
 W3_path_py=os.path.join(temp_path,Wallet_folder[2],"/__init__.py")
 
 if not os.path.exists(W1_path_pb) or  not os.path.exists(W1_path_pv) or not os.path.exists(W1_path_py):
+    public_key,private_key=rsa.newkeys(2048)
     with open("Wallet1/public.pem", "wb+") as f:
         f.write(public_key.save_pkcs1("PEM"))
     with open("Wallet1/private.pem", "wb+") as f:
@@ -48,6 +49,7 @@ if not os.path.exists(W1_path_pb) or  not os.path.exists(W1_path_pv) or not os.p
         pass
         
 if not os.path.exists(W2_path_pb) or not os.path.exists(W2_path_pv) or not os.path.exists(W2_path_py):
+    public_key,private_key=rsa.newkeys(2048)
     with open("Wallet2/public.pem", "wb+") as f:
         f.write(public_key.save_pkcs1("PEM"))
     with open("Wallet2/private.pem", "wb+") as f:
@@ -56,6 +58,7 @@ if not os.path.exists(W2_path_pb) or not os.path.exists(W2_path_pv) or not os.pa
         pass
 
 if not os.path.exists(W3_path_pb) or not os.path.exists(W3_path_pv) or not os.path.exists(W3_path_py):
+    public_key,private_key=rsa.newkeys(2048)
     with open("Wallet3/public.pem", "wb+") as f:
         f.write(public_key.save_pkcs1("PEM"))
     with open("Wallet3/private.pem", "wb+") as f:

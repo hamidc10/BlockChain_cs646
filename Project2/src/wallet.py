@@ -31,7 +31,7 @@ class Wallet:
         for i in temp:
             prep_address.append(i.replace("\n",''))
        
-        temp_str=str(prep_address[1])+str(prep_address[2])+str(prep_address[3])
+        temp_str=str(prep_address[1])+str(prep_address[2])+str(prep_address[3])+str(prep_address[4])+str(prep_address[5])+str(prep_address[6])
         
         self.address = hashlib.sha256(temp_str.encode("utf-8")).hexdigest()
 
