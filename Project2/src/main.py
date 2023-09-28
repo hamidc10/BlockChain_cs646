@@ -101,6 +101,7 @@ def driver():
                 to_address = other_wallets[1].address
             amount = input("Enter the amount you would like to send: ")
             # Create transaction with wallet
+            print(type(to_address))
             transaction_file_path = selected_wallet.send(to_address, int(amount))
             # Validate transaction on blockchain
             block.new_block(transaction_file_path)
