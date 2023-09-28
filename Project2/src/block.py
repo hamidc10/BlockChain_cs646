@@ -22,7 +22,6 @@ from constants import (
 )
 
 
-# TODO: adjust this to validate transactions and update the account state file
 class Block:
 
     """
@@ -43,6 +42,7 @@ class Block:
         self.file_hash_list = []
         self.block_hash_list = []
         self.print_block = print_block
+        init_account_state()
 
     def new_block(self, transaction_hash: str):
         """
@@ -67,18 +67,19 @@ class Block:
             body_dict = {"hash": transaction_hash, "content": json.loads(f.read())}
             body_list.append(body_dict)
 
-        # validate transaction signature
+        # Validate transaction signature
         # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
-        with open(body_dict["PublicKeyFilePath"], "rb") as f:
+        transaction = body_dict["content"]
+        with open(transaction["PublicKeyFilePath"], "rb") as f:
             public_key_bytes = f.read()
         public_key_hash = SHA256.new(public_key_bytes)
         public_key = RSA.import_key(public_key_bytes)
-        signature = bytes(body_dict["Signature"], "utf-8")
+        signature = bytes.fromhex(transaction["Signature"])
         try:
             pkcs1_15.new(public_key).verify(public_key_hash, signature)
-            print("The signature is valid!")
+            print("The transaction signature is valid!")
         except (ValueError, TypeError):
-            print("The signature is not valid!")
+            print("The transaction signature is not valid!")
             return
 
         height = self.file_hash_list.index(transaction_hash)
@@ -124,6 +125,15 @@ class Block:
             processed_transactions_folder, transaction_hash + ".json"
         )
         shutil.move(src_path, dst_path)
+
+        # Update account state file with new balances
+        amount = transaction["Amount"]
+        from_address = transaction["From"]
+        to_address = transaction["To"]
+        account_state = load_account_state()
+        account_state[from_address] = account_state.get(from_address, 0) - amount
+        account_state[to_address] = account_state.get(to_address, 0) + amount
+        save_account_state(account_state)
 
         # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
         if re.match(r"^[yY]+", self.print_block):

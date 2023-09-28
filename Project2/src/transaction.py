@@ -30,7 +30,7 @@ def new_transaction(
         "From": from_address,
         "To": to_address,
         "Amount": amount,
-        "Signature": signature.decode(),  # TODO: fix this
+        "Signature": signature.hex(),
         "PublicKeyFilePath": public_key_file_path,
     }
     data_str = str(data).replace(" ", "")

@@ -61,7 +61,7 @@ class Wallet:
         self.address = public_key_hash_str
 
         # set user signature to be the user address signed by the user's private key
-        # # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
+        # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
         private_key = RSA.import_key(private_key_bytes)
         self.signature = pkcs1_15.new(private_key).sign(public_key_hash)
 
