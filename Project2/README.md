@@ -22,6 +22,8 @@ stores the current balances of all blockchain users
 * maintained by the Block class
 * read by the Wallet class
 
+* Goal with this class is to store the balance of the three wallets using type Dict, and make them easily accessible to be read by wallet.py. This makes it show up within the main class, so that when the prompts are followed or a transaction is sent, it was able to be printed.
+
 ### Wallet class
 
 provides a user with access to the blockchain
