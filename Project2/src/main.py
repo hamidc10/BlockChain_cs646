@@ -23,28 +23,28 @@ def main():
             format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=serialization.NoEncryption(),
         )
-        pem_priv.splitlines()[0]
-        public_key = private_key.public_key()
-        pem_pub = public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        )
-        pem_pub.splitlines()[0]
+        # pem_priv.splitlines()[0]
+        # public_key = private_key.public_key()
+        # pem_pub = public_key.public_bytes(
+        #     encoding=serialization.Encoding.PEM,
+        #     format=serialization.PublicFormat.SubjectPublicKeyInfo
+        # )
+        # pem_pub.splitlines()[0]
 
         if not os.path.exists(wallet):
             os.makedirs(wallet, exist_ok=True)
             shutil.copy(source_pth, wallet)
 
-        path_pb = os.path.join(wallet, "public.pem")
+        # path_pb = os.path.join(wallet, "public.pem")
         path_pv = os.path.join(wallet, "private.pem")
         path_py = os.path.join(wallet, "__init__.py")
         if (
-            not os.path.exists(path_pb)
-            or not os.path.exists(path_pv)
+            # not os.path.exists(path_pb)
+            not os.path.exists(path_pv)
             or not os.path.exists(path_py)
         ):
-            with open(path_pb, "wb+") as f:
-                f.write(pem_pub)
+            # with open(path_pb, "wb+") as f:
+            #     f.write(pem_pub)
             with open(path_pv, "wb+") as f:
                 f.write(pem_priv)
             with open(path_py, "w") as f:

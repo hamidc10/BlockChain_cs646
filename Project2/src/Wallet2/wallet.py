@@ -6,14 +6,19 @@ import os
 import rsa
 from transaction import new_transaction
 from constants import keys_folder
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 import hashlib
+
+
 
 
 class Wallet:
     name: str
     count: int
     address: str
-    signature: str
+    # signature: str
 
 
     def __init__(self, name: str ):
@@ -23,21 +28,24 @@ class Wallet:
         """
         self.name = name
 
-        temp=[]
-        with open(f"{self.name}/public.pem","r") as f:
-            temp=f.readlines()
         
-        prep_address=[]
-        for i in temp:
-            prep_address.append(i.replace("\n",''))
+        f= open(f"{self.name}/private.pem","rb") 
+        pk=serialization.load_pem_private_key(f.read(),password=None)
+        pbk = pk.public_key()
+        pem = pbk.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+
        
-        temp_str=str(prep_address[1])+str(prep_address[2])+str(prep_address[3])+str(prep_address[4])+str(prep_address[5])+str(prep_address[6])
-        
-        self.address = hashlib.sha256(temp_str.encode("utf-8")).hexdigest()
+       
+        pem_str=''.join(pem.decode('utf-8').splitlines()[1:8]) 
+        self.address = hashlib.sha256(pem_str.encode('utf-8')).hexdigest()
+       
     
         # TODO: set user signature to be the user address signed by the user's private key
-        self.signature
-
+        self.signature=pk.sign( "bob",padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
+        print(self.signature)
     def send(self, to_address: str, amount: int) -> str:
         """
         Sends the specified amount to the user with the specified address through
