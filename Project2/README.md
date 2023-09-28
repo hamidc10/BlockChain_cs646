@@ -41,3 +41,5 @@ processes transactions created by users (via the Wallet class)
 * validates the signatures of senders
 * saves validated transactions to blockchain
 * updates user balances in the account state file
+
+* the goal for this class is to take transactions from the pending and processed transaction folders, and to store them as a JSON file. we take the hash of previous the previous block, and the height of the block and create a new block name using " block_name = hashlib.sha256(header_str.encode("utf-8")).hexdigest()" which is enabled through us importing hashlib. It is then added to a list of other blocks using "self.block_hash_list.append(block_name)"
