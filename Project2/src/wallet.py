@@ -36,7 +36,7 @@ class Wallet:
         self.address = hashlib.sha256(temp_str.encode("utf-8")).hexdigest()
     
         # TODO: set user signature to be the user address signed by the user's private key
-        self.signature = ""
+        self.signature
 
     def send(self, to_address: str, amount: int) -> str:
         """

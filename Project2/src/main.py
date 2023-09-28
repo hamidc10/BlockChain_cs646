@@ -6,22 +6,35 @@
 from block import Block
 import os
 import shutil
-import rsa
-import sys
-
+import hashlib
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 def main():
     source_pth = "wallet.py"
     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
     for wallet in Wallet_folder:
+        private_key = rsa.generate_private_key(
+                public_exponent=65537,
+                key_size=2048,
+            )
+        pem_priv = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        pem_priv.splitlines()[0]
+        public_key = private_key.public_key()
+        pem_pub = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        pem_pub.splitlines()[0]
+
         if not os.path.exists(wallet):
-            public_key, private_key = rsa.newkeys(2048)
             os.makedirs(wallet, exist_ok=True)
             shutil.copy(source_pth, wallet)
-            with open(wallet + "/public.pem", "wb+") as f:
-                f.write(public_key.save_pkcs1("PEM"))
-            with open(wallet + "/private.pem", "wb+") as f:
-                f.write(private_key.save_pkcs1("PEM"))
+
         path_pb = os.path.join(wallet, "public.pem")
         path_pv = os.path.join(wallet, "private.pem")
         path_py = os.path.join(wallet, "__init__.py")
@@ -30,11 +43,10 @@ def main():
             or not os.path.exists(path_pv)
             or not os.path.exists(path_py)
         ):
-            public_key, private_key = rsa.newkeys(2048)
             with open(path_pb, "wb+") as f:
-                f.write(public_key.save_pkcs1("PEM"))
+                f.write(pem_pub)
             with open(path_pv, "wb+") as f:
-                f.write(private_key.save_pkcs1("PEM"))
+                f.write(pem_priv)
             with open(path_py, "w") as f:
                 pass
     driver()
@@ -61,7 +73,7 @@ def driver():
         print(f" 3. Wallet 3 address {wallet3.address}")
         print(f" 4. Create a Wallet")
         choice = input("Input # of your choice: ")
-        
+
         if choice == "1":
             selected_wallet = wallet1
             other_wallets = [wallet2, wallet3]
@@ -77,7 +89,7 @@ def driver():
         print("2. Check your account balance")
         print("3. Check another account balance")
         choice = input("Input # of your choice: ")
-        
+
         if choice == "1":
             print("\n--- Select wallet to send to  ---")
             print(f"1. {other_wallets[0].name}")
