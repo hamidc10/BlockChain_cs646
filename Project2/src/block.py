@@ -104,6 +104,7 @@ class Block:
         # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
         # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
         src_path = os.path.join(pending_transactions_folder, transaction_hash + ".json")
+        
         dst_path = os.path.join(
             processed_transactions_folder, transaction_hash + ".json"
         )

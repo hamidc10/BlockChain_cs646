@@ -8,3 +8,4 @@ blocks_folder = "./blocks/"
 pending_transactions_folder = "./pending/"
 processed_transactions_folder = "./processed/"
 account_state_file_path = "./account_state.json"
+keys={"Wallet1":"./Wallet1/private.pem","Wallet2":"./Wallet2/private.pem","Wallet3":"./Wallet3/private.pem"}

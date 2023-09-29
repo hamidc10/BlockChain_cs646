@@ -28,9 +28,9 @@ class Wallet:
         self.name = name
 
         f = open(f"{self.name}/private.pem", "rb")
-        pk = serialization.load_pem_private_key(f.read(), password=None)
-        pbk = pk.public_key()
-        pem = pbk.public_bytes(
+        priv_key = serialization.load_pem_private_key(f.read(), password=None)
+        pub_key=priv_key.public_key()
+        pem = pub_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
@@ -41,7 +41,7 @@ class Wallet:
         pem_str = "".join(pem.decode("utf-8").splitlines()[1:-2])
         self.address = hashlib.sha256(pem_str.encode("utf-8")).hexdigest()
 
-    def send(self, to_address: str, amount: int) -> str:
+    def send(self, to_address: str, amount: int) -> list:
         """
         Sends the specified amount to the user with the specified address through
         a transaction on the blockchain and returns the hash of the transaction.
@@ -59,7 +59,6 @@ class Wallet:
             "Amount": amount,
         }
         message = json.dumps(data).encode("utf-8")
-        print(message)
         self.signature = private_key.sign(
             message,
             padding.PSS(
@@ -68,8 +67,7 @@ class Wallet:
             ),
             hashes.SHA256()
         )
-        print(self.signature)
-        return new_transaction(self.address, to_address, amount, str(self.signature))
+        return [new_transaction(self.address, to_address, amount, str(self.signature)), message]
 
     def check_balance(self, address: str = "") -> int:
         """

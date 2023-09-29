@@ -6,18 +6,20 @@
 from block import Block
 import os
 import shutil
-import hashlib
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+from constants import keys
+import json
+
 
 def main():
     source_pth = "wallet.py"
     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
     for wallet in Wallet_folder:
         private_key = rsa.generate_private_key(
-                public_exponent=65537,
-                key_size=2048,
-            )
+            public_exponent=65537,
+            key_size=2048,
+        )
         pem_priv = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
@@ -44,7 +46,7 @@ def main():
             or not os.path.exists(path_py)
         ):
             # with open(path_pb, "wb+") as f:
-            #     f.write(pem_pub)
+            #      f.write(pem_pub)
             with open(path_pv, "wb+") as f:
                 f.write(pem_priv)
             with open(path_py, "w") as f:
@@ -102,9 +104,27 @@ def driver():
             amount = input("Enter the amount you would like to send: ")
             # Create transaction with wallet
             print(type(to_address))
-            transaction_file_path = selected_wallet.send(to_address, int(amount))
+            transaction_file_path, message = selected_wallet.send(to_address, int(amount))
             # Validate transaction on blockchain
-            block.new_block(transaction_file_path)
+            pem = open(keys[selected_wallet.name], "rb")
+            public_key = serialization.load_pem_private_key(
+                pem.read(), password=None
+            ).public_key()
+            garbage_message=json.dumps({"j":"jkl"}).encode("utf-8") 
+            # replace message below with garbage message to see what happens if unable to verify
+            try:
+                public_key.verify(
+                    selected_wallet.signature,
+                    message,
+                    padding.PSS(
+                        mgf=padding.MGF1(hashes.SHA256()),
+                        salt_length=padding.PSS.MAX_LENGTH,
+                    ),
+                    hashes.SHA256(),
+                )
+                block.new_block(transaction_file_path)
+            except:
+                print("Unable to verify signature")
         elif choice == "2":
             balance = selected_wallet.check_balance()
             print(f"Your account balance ({selected_wallet.name}): {balance}")
