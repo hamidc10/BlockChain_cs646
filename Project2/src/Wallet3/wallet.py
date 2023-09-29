@@ -38,12 +38,22 @@ class Wallet:
         )
 
        
+       # reference used to remove unicode error https://stackoverflow.com/questions/42339876/error-unicodedecodeerror-utf-8-codec-cant-decode-byte-0xff-in-position-0-in
+        pem_bytes = pem[27:-25]
+        self.address = hashlib.sha256(pem_bytes).hexdigest()
        
-        pem_str=''.join(pem.decode('utf-8').splitlines()[1:-2]) 
-        print(pem_str)
-        self.address = hashlib.sha256(pem_str.encode('utf-8')).hexdigest()
-       
+    def serializing_sig(self):
+        """
+        use this to make the sig serializable to remove JSON error
+        """
+        if self.signature:
+            return self.signature.hex()
+        return None
     
+    directory = '../pending/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        
         # TODO: set user signature to be the user address signed by the user's private key
         # self.signature=pk.sign( "bob",padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
         # print(self.signature)
@@ -72,9 +82,9 @@ class Wallet:
         # pem_str=''.join(pk.decode('utf-8').splitlines()[1:-2])
 
         # self.signature=pk.sign( "transaction",padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
-        
+        serialized_signature = self.serializing_sig()
       
-        return new_transaction(self.address, to_address, amount, self.signature)
+        return new_transaction(self.address, to_address, amount, self.serializing_sig())
 
     def check_balance(self, address: str = "") -> int:
         """
