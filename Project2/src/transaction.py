@@ -10,7 +10,6 @@ import hashlib
 
 from constants import pending_transactions_folder
 
-
 # Note: converted this back to a function because it doesn't really need to be a class
 def new_transaction(from_address: str, to_address: str, amount: int, signature: str) -> str:
     """

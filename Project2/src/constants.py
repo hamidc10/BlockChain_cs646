@@ -3,8 +3,8 @@
 # Student initials: HC, CRW, VVS, TC, XM
 # Date: 10/1/23
 
-keys_folder = "../keys/"
-blocks_folder = "../blocks/"
-pending_transactions_folder = "../pending/"
-processed_transactions_folder = "../processed/"
-account_state_file_path = "../account_state.json"
+keys_folder = "./keys/"
+blocks_folder = "./blocks/"
+pending_transactions_folder = "./pending/"
+processed_transactions_folder = "./processed/"
+account_state_file_path = "./account_state.json"
