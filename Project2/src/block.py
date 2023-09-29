@@ -94,6 +94,8 @@ class Block:
 
         block = {"header": header_dict, "body": body_list}
 
+        os.makedirs(blocks_folder, exist_ok=True)
+
         with open(blocks_folder + block_name + ".json", "w") as new_block:
             json.dump(block, new_block, indent=None)
 
