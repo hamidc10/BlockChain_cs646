@@ -43,7 +43,17 @@ class Wallet:
         print(pem_str)
         self.address = hashlib.sha256(pem_str.encode('utf-8')).hexdigest()
        
-    
+    def serializing_sig(self):
+        """
+        use this to make the sig serializable to remove JSON error
+        """
+        if self.signature:
+            return self.signature.hex()
+        return None
+    directory = '../pending/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        
         # TODO: set user signature to be the user address signed by the user's private key
         # self.signature=pk.sign( "bob",padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
         # print(self.signature)
