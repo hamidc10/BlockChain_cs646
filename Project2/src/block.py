@@ -74,9 +74,11 @@ class Block:
         transaction = body_dict["content"]
         with open(transaction["PublicKeyFilePath"], "rb") as f:
             public_key_bytes = f.read()
+        # We assume that this is the message of the signature:
         public_key_hash = SHA256.new(public_key_bytes)
+        # Importing the public key to an RSA object used for validation:
         public_key = RSA.import_key(public_key_bytes)
-        # Have to convert signature back from hexadecimal
+        # Have to convert signature back from hexadecimal:
         signature = bytes.fromhex(transaction["Signature"])
         try:
             pkcs1_15.new(public_key).verify(public_key_hash, signature)
