@@ -9,6 +9,7 @@ from typing import Dict
 from constants import account_state_file_path
 
 # map of user addresses to balances
+# AccountStateDict[address] = balance
 AccountStateDict = Dict[str, int]
 
 

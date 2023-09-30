@@ -17,6 +17,12 @@ def main():
     wallet2 = Wallet("Wallet #2")
     wallet3 = Wallet("Wallet #3")
 
+    print("\nStarting test simulation...")
+    print(
+        "You will be able to test different features with multiple wallets interacting on the blockchain"
+    )
+    print("To exit the loop, kill the program (CTRL+C)")
+
     while True:
         print("\n--- Select your wallet ---")
         print(f"1. {wallet1.name}")

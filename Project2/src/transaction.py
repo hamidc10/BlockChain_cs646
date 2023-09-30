@@ -30,8 +30,8 @@ def new_transaction(
         "From": from_address,
         "To": to_address,
         "Amount": amount,
-        "Signature": signature.hex(),
-        "PublicKeyFilePath": public_key_file_path,
+        "Signature": signature.hex(),  # have to convert to hexadecimal format to save as JSON
+        "PublicKeyFilePath": public_key_file_path,  # the Block class needs the public key to validate the signature
     }
     data_str = str(data).replace(" ", "")
     data_hash = hashlib.sha256(data_str.encode("utf-8")).hexdigest()

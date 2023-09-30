@@ -22,6 +22,8 @@ from constants import (
 )
 
 
+# The code added here is for validating transactions (using their signatures and public keys)
+# and for updating the account state file (which stores wallet balances)
 class Block:
 
     """
