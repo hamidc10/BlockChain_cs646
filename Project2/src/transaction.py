@@ -25,6 +25,8 @@ def new_transaction(from_address: str, to_address: str, amount: int, signature: 
         "Amount": amount,
         "Signature": signature,
     }
+
+        print("Sender's account not found.")
     data_str = str(data).replace(" ", "")
     data_hash = hashlib.sha256(data_str.encode("utf-8")).hexdigest()
     file_name = data_hash + ".json"

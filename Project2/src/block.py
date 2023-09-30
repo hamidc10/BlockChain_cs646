@@ -109,6 +109,20 @@ class Block:
             processed_transactions_folder, transaction_hash + ".json"
         )
         shutil.move(src_path, dst_path)
+        #hopefully this works to update account balances
+        def load_account_state():
+            with open ('account_state.py', 'r') as updated_balance:
+                return json.load
+        def update_account_balance(self, account_state, block):
+            for transaction in block['body']:
+                sender = transaction['content']['From']
+                receiver = transaction['content']['To']
+                amount = transaction['content']['Amount']
+                if sender in account_state:
+                    account_state[sender] -= amount
+                    if receiver in account_state:
+                        account_state[receiver] += amount
+                return account_state
 
         # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
         if re.match(r"^[yY]+", self.print_block):
