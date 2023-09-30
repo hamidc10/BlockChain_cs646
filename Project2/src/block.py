@@ -76,6 +76,7 @@ class Block:
             public_key_bytes = f.read()
         public_key_hash = SHA256.new(public_key_bytes)
         public_key = RSA.import_key(public_key_bytes)
+        # Have to convert signature back from hexadecimal
         signature = bytes.fromhex(transaction["Signature"])
         try:
             pkcs1_15.new(public_key).verify(public_key_hash, signature)
@@ -90,7 +91,7 @@ class Block:
         else:
             previousblock_hash = self.block_hash_list[height - 1]
 
-            #  Appending body of previous block to body of current block.
+            # Appending body of previous block to body of current block.
             with open(blocks_folder + previousblock_hash + ".json", "r") as b:
                 body = json.loads(b.read())
                 body_list.append(body["body"][0])
