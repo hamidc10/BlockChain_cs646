@@ -106,4 +106,9 @@ class Wallet:
         balance_dict= account_state.load_account_state()
         
         # TODO: return the value in the account state dictionary under the given address
-        return balance_dict[address]
+        # if balance_dict:
+        try:
+            return balance_dict[address]
+        except: 
+            return 0
+        # return 0 

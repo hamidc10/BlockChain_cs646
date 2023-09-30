@@ -161,7 +161,16 @@ class Block:
                 processed_transactions_folder, transaction_hash + ".json"
             )
             shutil.move(src_path, dst_path)
-
+            
+            # TODO: ----------- DELETE THE STEPS BELOW AFTER DONE ------------------------
+            
+            # get "From", "To", "Amount" from transaction_body and store in seperate variables. 
+            # call load_account_state() and assign to a variable. (the variable will store the dictionary that the function returns)
+            # at the value of "from_address" in the dictionary store the new balance: account_state.get(from_address,0) - amount
+            # check the "to_address" amount if it's <0 then consider the amount as 0 then
+            # repeat the above step for the "to_address" and replace "- amount" with "+ amount" 
+            # call save_account_state(account_state)
+            
             # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
             if re.match(r"^[yY]+", self.print_block):
                 print("\nNew Block:\n", json.dumps(block, indent=3))
