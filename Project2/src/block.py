@@ -171,6 +171,13 @@ class Block:
             # repeat the above step for the "to_address" and replace "- amount" with "+ amount" 
             # call save_account_state(account_state)
             
+            amount = transaction_body["Amount"]
+            from_address = transaction_body["From"]
+            to_address = transaction_body["To"]
+            account_state = load_account_state()
+            account_state[from_address] = account_state.get(from_address,0) - amount
+            account_state[to_address] = account_state.get(to_address,0) + amount
+            save_account_state(account_state)
             # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
             if re.match(r"^[yY]+", self.print_block):
                 print("\nNew Block:\n", json.dumps(block, indent=3))
