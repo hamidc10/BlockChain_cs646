@@ -57,12 +57,14 @@ class Wallet:
         # set user address to be the SHA256 hash of the user's public key
         # https://pycryptodome.readthedocs.io/en/latest/src/hash/sha256.html
         public_key_hash = SHA256.new(public_key_bytes)
+        # convert hash binary into hexadecimal string so it is printable
         public_key_hash_str = public_key_hash.hexdigest()
         self.address = public_key_hash_str
 
         # set user signature to be the user address signed by the user's private key
         # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
         private_key = RSA.import_key(private_key_bytes)
+        # public_key_hash is the binary value of the user address
         self.signature = pkcs1_15.new(private_key).sign(public_key_hash)
 
     def send(self, to_address: str, amount: int) -> str:

@@ -75,6 +75,7 @@ class Block:
         with open(transaction["PublicKeyFilePath"], "rb") as f:
             public_key_bytes = f.read()
         # We assume that this is the message of the signature:
+        # This is the same as the binary value of the sender address:
         public_key_hash = SHA256.new(public_key_bytes)
         # Importing the public key to an RSA object used for validation:
         public_key = RSA.import_key(public_key_bytes)
