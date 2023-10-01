@@ -15,17 +15,18 @@ from constants import (
 )
 
 
-def main():
+def init_dirs():
+
     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
     for wallet in Wallet_folder:
-        if not os.path.exists(wallet):
-            os.makedirs(wallet, exist_ok=True)
-            shutil.copy(wallet_skeleton, f"{wallet}/wallet.py")
+        # adding the current wallet_skeleton.py to the wallet
+        os.makedirs(wallet, exist_ok=True)
+        shutil.copy(wallet_skeleton, f"{wallet}/wallet.py")
 
-        path_py = os.path.join(wallet, "__init__.py")
-        if not os.path.exists(path_py):
-            with open(path_py, "w") as f:
-                pass
+        # path_py = os.path.join(wallet, "__init__.py")
+        # if not os.path.exists(path_py):
+        #     with open(path_py, "w") as f:
+        #         pass
 
     directories = [
         keys_folder,
@@ -33,15 +34,16 @@ def main():
         processed_transactions_folder,
         pending_transactions_folder,
     ]
-
+    
+    # initializing the directories if they don't already exist
     for dir in directories:
         if not os.path.exists(dir):
             os.makedirs(dir, exist_ok=True)
 
-    driver()
+    main()
 
 
-def driver():
+def main():
     from Wallet1.wallet import Wallet as W1
     from Wallet2.wallet import Wallet as W2
     from Wallet3.wallet import Wallet as W3
@@ -60,7 +62,6 @@ def driver():
         print(f" 1. Wallet 1 address {wallet1.address}")
         print(f" 2. Wallet 2 address {wallet2.address}")
         print(f" 3. Wallet 3 address {wallet3.address}")
-        print(f" 4. Create a Wallet")
         choice = input("Input # of your choice: ")
 
         if choice == "1":
@@ -114,4 +115,4 @@ def driver():
 
 
 if __name__ == "__main__":
-    main()
+    init_dirs()
