@@ -1,2 +1,2 @@
-# To use: pip install -r path/to/file/requirements.txt
+# To run: pip install -r path/to/file/requirements.txt
 cryptography==41.0.4
