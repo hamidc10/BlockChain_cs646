@@ -13,9 +13,9 @@ def main():
     print("Project 2 by Group 3\n")
     print_blocks = input("Enable printing blocks to terminal? (y/n): ")
     block = Block(print_blocks)
-    wallet1 = Wallet("Wallet #1")
-    wallet2 = Wallet("Wallet #2")
-    wallet3 = Wallet("Wallet #3")
+    wallet1 = Wallet("Wallet A")
+    wallet2 = Wallet("Wallet B")
+    wallet3 = Wallet("Wallet C")
 
     print("\nStarting test simulation...")
     print(
@@ -25,14 +25,14 @@ def main():
 
     while True:
         print("\n--- Select your wallet ---")
-        print(f"(a) {wallet1.name}")
-        print(f"(b) {wallet2.name}")
-        print(f"(c) {wallet3.name}")
-        choice = input("Input letter of your choice: ")
-        if choice == "a":
+        print(f"1. {wallet1.name}")
+        print(f"2. {wallet2.name}")
+        print(f"3. {wallet3.name}")
+        choice = input("Input # of your choice: ")
+        if choice == "1":
             selected_wallet = wallet1
             other_wallets = [wallet2, wallet3]
-        elif choice == "b":
+        elif choice == "2":
             selected_wallet = wallet2
             other_wallets = [wallet1, wallet3]
         else:
@@ -40,16 +40,16 @@ def main():
             other_wallets = [wallet1, wallet2]
 
         print("\n--- Select an action  ---")
-        print("(a) Create transaction")
-        print("(b) Check your account balance")
-        print("(c) Check another account balance")
-        choice = input("Input letter of your choice: ")
-        if choice == "a":
+        print("1. Create transaction")
+        print("2. Check your account balance")
+        print("3. Check another account balance")
+        choice = input("Input # of your choice: ")
+        if choice == "1":
             print("\n--- Select wallet to send to  ---")
-            print(f"(a) {other_wallets[0].name}")
-            print(f"(b) {other_wallets[1].name}")
+            print(f"1. {other_wallets[0].name}")
+            print(f"2. {other_wallets[1].name}")
             choice = input("Input letter of your choice: ")
-            if choice == "a":
+            if choice == "1":
                 to_address = other_wallets[0].address
             else:
                 to_address = other_wallets[1].address
@@ -58,15 +58,15 @@ def main():
             transaction_hash = selected_wallet.send(to_address, int(amount))
             # Validate transaction on blockchain
             block.new_block(transaction_hash)
-        elif choice == "b":
+        elif choice == "2":
             balance = selected_wallet.check_balance()
             print(f"Your account balance ({selected_wallet.name}): {balance}")
         else:
             print("\n--- Select wallet to check balance of ---")
-            print(f"(a) {other_wallets[0].name}")
-            print(f"(b) {other_wallets[1].name}")
-            choice = input("Input letter of your choice: ")
-            if choice == "a":
+            print(f"1. {other_wallets[0].name}")
+            print(f"2. {other_wallets[1].name}")
+            choice = input("Input # of your choice: ")
+            if choice == "1":
                 other_wallet = other_wallets[0]
             else:
                 other_wallet = other_wallets[1]
