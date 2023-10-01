@@ -32,6 +32,7 @@ def new_transaction(from_address: str, to_address: str, amount: int, signature: 
     complete_transaction_str = str(complete_transaction).replace(" ", "")
     complete_hash = hashlib.sha256(complete_transaction_str.encode("utf-8")).hexdigest()
     file_name = complete_hash + ".json"
+
     file_path = os.path.join(pending_transactions_folder, file_name)
     with open(file_path, "w") as f:
         json.dump(complete_transaction, f, indent=None)
