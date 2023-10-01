@@ -96,7 +96,7 @@ def main():
             balance = selected_wallet.check_balance()
             print(f"Your account balance ({selected_wallet.name}): {balance}")
 
-        else:
+        elif choice == "3":
             print("\n--- Select wallet to check balance of ---")
             print(f"1. {other_wallets[0].name}")
             print(f"2. {other_wallets[1].name}")
@@ -110,6 +110,8 @@ def main():
             # Check balance of other wallet using this wallet
             balance = selected_wallet.check_balance(other_wallet.address)
             print(f"Other account balance ({other_wallet.name}): {balance}")
+        else:
+            continue
 
 
 if __name__ == "__main__":
