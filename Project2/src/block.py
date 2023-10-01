@@ -164,7 +164,7 @@ class Block:
             
             # TODO: ----------- DELETE THE STEPS BELOW AFTER DONE ------------------------
             
-            # get "From", "To", "Amount" from transaction_body and store in seperate variables. 
+            # get "From", "To", "Amount" from transaction_body and store in separate variables. 
             # call load_account_state() and assign to a variable. (the variable will store the dictionary that the function returns)
             # at the value of "from_address" in the dictionary store the new balance: account_state.get(from_address,0) - amount
             # check the "to_address" amount if it's <0 then consider the amount as 0 then
