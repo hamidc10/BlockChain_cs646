@@ -68,8 +68,10 @@ def main():
         elif choice == "3":
             selected_wallet = wallet3
             other_wallets = [wallet1, wallet2]
-        else:
+        elif choice == "4":
             exit(-1)
+        else: 
+            continue
 
         print("\n--- Select an action  ---")
         print("1. Create transaction")
