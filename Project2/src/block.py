@@ -58,15 +58,8 @@ class Block:
 
         # Creating the body for the block based on the current transaction.
         f = open(pending_transactions_folder + transaction_hash + ".json", "r")
-        transaction_dict = json.loads(f.read())
-        transaction_body = transaction_dict["transaction"]
-        sender_address = transaction_dict["details"]
-        public_key_file = f"{keys_folder}/{sender_address}.pem"
-
-        # Validate transaction on blockchain
-        pem = open(public_key_file, "rb")
-        public_key = serialization.load_pem_public_key(pem.read())
-
+        transaction_body = json.loads(f.read())
+        
         garbage_message = json.dumps({"j": "jkl"}).encode("utf-8")
         # replace data_to_verify below with garbage message to see what happens if unable to verify
 
@@ -82,13 +75,22 @@ class Block:
                 print("Transaction format wrong!")
                 raise Exception("Transaction format wrong!")
 
+
+            wallet_address = transaction_body["From"]
+            public_key_file = f"{keys_folder}/{wallet_address}.pem"
+
+            # Validate transaction on blockchain
+            pem = open(public_key_file, "rb")
+            public_key = serialization.load_pem_public_key(pem.read())
+
+            # Recreating data from transaction for verification 
             data = {
                 "From": transaction_body["From"],
                 "To": transaction_body["To"],
                 "Amount": transaction_body["Amount"],
             }
-
             data_to_verify = json.dumps(data).encode("utf-8")
+
             signature = bytes.fromhex(transaction_body["Signature"])
 
             public_key.verify(
@@ -137,8 +139,6 @@ class Block:
 
             block = {"header": header_dict, "body": body_list}
 
-            # os.makedirs(blocks_folder, exist_ok=True)
-
             with open(blocks_folder + block_name + ".json", "w") as new_block:
                 json.dump(block, new_block, indent=None)
 
@@ -156,7 +156,6 @@ class Block:
             shutil.move(src_path, dst_path)
 
             # updates account balance
-
             amount = transaction_body["Amount"]
             from_address = transaction_body["From"]
             to_address = transaction_body["To"]
@@ -164,6 +163,7 @@ class Block:
             account_state[from_address] = account_state.get(from_address, 0) - amount
             account_state[to_address] = account_state.get(to_address, 0) + amount
             save_account_state(account_state)
+            
             # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
             if re.match(r"^[yY]+", self.print_block):
                 print("\nNew Block:\n", json.dumps(block, indent=3))

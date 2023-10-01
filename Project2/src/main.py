@@ -17,15 +17,10 @@ from constants import (
 
 def init_dirs():
     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
+    # adding the current wallet_skeleton.py to each "Wallet"
     for wallet in Wallet_folder:
-        # adding the current wallet_skeleton.py to the wallet
         os.makedirs(wallet, exist_ok=True)
         shutil.copy(wallet_skeleton, f"{wallet}/wallet.py")
-
-        # path_py = os.path.join(wallet, "__init__.py")
-        # if not os.path.exists(path_py):
-        #     with open(path_py, "w") as f:
-        #         pass
 
     directories = [
         keys_folder,
@@ -61,7 +56,8 @@ def main():
         print(f" 1. Wallet 1 address {wallet1.address}")
         print(f" 2. Wallet 2 address {wallet2.address}")
         print(f" 3. Wallet 3 address {wallet3.address}")
-        choice = input("Input # of your choice: ")
+        print(" 4. Exit")
+        choice = input("\nInput # of your choice: ")
 
         if choice == "1":
             selected_wallet = wallet1
@@ -69,21 +65,23 @@ def main():
         elif choice == "2":
             selected_wallet = wallet2
             other_wallets = [wallet1, wallet3]
-        else:
+        elif choice == "3":
             selected_wallet = wallet3
             other_wallets = [wallet1, wallet2]
+        else:
+            exit(-1)
 
         print("\n--- Select an action  ---")
         print("1. Create transaction")
         print("2. Check your account balance")
         print("3. Check another account balance")
-        choice = input("Input # of your choice: ")
+        choice = input("\nInput # of your choice: ")
 
         if choice == "1":
             print("\n--- Select wallet to send to  ---")
             print(f"1. {other_wallets[0].name}")
             print(f"2. {other_wallets[1].name}")
-            choice = input("Input # of your choice: ")
+            choice = input("\nInput # of your choice: ")
             if choice == "1":
                 to_address = other_wallets[0].address
             else:
@@ -102,7 +100,8 @@ def main():
             print("\n--- Select wallet to check balance of ---")
             print(f"1. {other_wallets[0].name}")
             print(f"2. {other_wallets[1].name}")
-            choice = input("Input # of your choice: ")
+            choice = input("\nInput # of your choice: ")
+            
             if choice == "1":
                 other_wallet = other_wallets[0]
             else:
