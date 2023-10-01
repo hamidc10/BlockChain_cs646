@@ -1,8 +1,3 @@
-# We (Hamid, Chantel, Vira, Trey, Xavier) declare that we have completed this computer code in accordance with the UAB Academic Integrity Code and the UAB CS Honor Code.
-# We have read the UAB Academic Integrity Code and understand that any breach of the Code may result in severe penalties.
-# Student initials: HC, CRW, VVS, TC, XM
-# Date: 10/1/23
-
 import datetime
 import json
 import hashlib
@@ -65,8 +60,8 @@ class Block:
         f = open(pending_transactions_folder + transaction_hash + ".json", "r")
         transaction_dict = json.loads(f.read())
         transaction_body = transaction_dict["transaction"]
-        sender_name = transaction_dict["details"]
-        public_key_file = f"{keys_folder}/{sender_name}.pem"
+        sender_address = transaction_dict["details"]
+        public_key_file = f"{keys_folder}/{sender_address}.pem"
 
         # Validate transaction on blockchain
         pem = open(public_key_file, "rb")
@@ -74,30 +69,28 @@ class Block:
 
         garbage_message = json.dumps({"j": "jkl"}).encode("utf-8")
         # replace data_to_verify below with garbage message to see what happens if unable to verify
-       
+
         try:
             # https://www.w3schools.com/python/gloss_python_check_if_dictionary_item_exists.asp
             # https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
-            
+
             # Checking transaction only has the expected keys: timestamp, from, to, amount, signature
-            transaction_keys=transaction_body.keys()
+            transaction_keys = transaction_body.keys()
             should_only_have_keys = ["Timestamp", "From", "To", "Amount", "Signature"]
             if not all(keys in transaction_keys for keys in should_only_have_keys):
-                print(transaction_keys,"\n",f"dict_keys({should_only_have_keys})")
+                print(transaction_keys, "\n", f"dict_keys({should_only_have_keys})")
                 print("Transaction format wrong!")
-                raise Exception(
-                    'Transaction format wrong!'
-                )
+                raise Exception("Transaction format wrong!")
 
             data = {
                 "From": transaction_body["From"],
                 "To": transaction_body["To"],
                 "Amount": transaction_body["Amount"],
             }
-            
+
             data_to_verify = json.dumps(data).encode("utf-8")
             signature = bytes.fromhex(transaction_body["Signature"])
-            
+
             public_key.verify(
                 signature,
                 data_to_verify,
@@ -156,24 +149,24 @@ class Block:
             src_path = os.path.join(
                 pending_transactions_folder, transaction_hash + ".json"
             )
-            
+
             dst_path = os.path.join(
                 processed_transactions_folder, transaction_hash + ".json"
             )
             shutil.move(src_path, dst_path)
-            
-            #updates account balance
-            
+
+            # updates account balance
+
             amount = transaction_body["Amount"]
             from_address = transaction_body["From"]
             to_address = transaction_body["To"]
             account_state = load_account_state()
-            account_state[from_address] = account_state.get(from_address,0) - amount
-            account_state[to_address] = account_state.get(to_address,0) + amount
+            account_state[from_address] = account_state.get(from_address, 0) - amount
+            account_state[to_address] = account_state.get(to_address, 0) + amount
             save_account_state(account_state)
             # Made regex to check for capital or lower case y since in NLP and wanted to implement something I learned
             if re.match(r"^[yY]+", self.print_block):
                 print("\nNew Block:\n", json.dumps(block, indent=3))
-            
+
         except:
             print("Unable to add transaction to block: Transaction DENIED")

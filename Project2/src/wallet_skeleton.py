@@ -12,30 +12,29 @@ import hashlib
 import json
 import account_state
 
+
 class Wallet:
     name: str
-    count: int
     address: str
     signature: bytes
+    details: str
 
     def __init__(self, name: str):
         """
         Initializes the wallet by loading/creating keys and setting the address.
         """
-
         self.name = name
-        
-        priv_file=f"{self.name}/private.pem"
-        pub_file=f"{keys_folder}/{self.name}.pem"
+
+        priv_file = f"{self.name}/private.pem"
         if os.path.exists(priv_file):
             f = open(priv_file, "rb")
             priv_key = serialization.load_pem_private_key(f.read(), password=None)
-            pub_key=priv_key.public_key()
+            pub_key = priv_key.public_key()
             pem_pub = pub_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo,
             )
-           
+
         else:
             priv_key = rsa.generate_private_key(
                 public_exponent=65537,
@@ -49,22 +48,21 @@ class Wallet:
             with open(f"{self.name}/private.pem", "wb+") as f:
                 f.write(pem_priv)
 
-            pub_key=priv_key.public_key()
+            pub_key = priv_key.public_key()
             pem_pub = pub_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo,
             )
-        
+        # reference used to remove unicode error https://stackoverflow.com/questions/42339876/error-unicodedecodeerror-utf-8-codec-cant-decode-byte-0xff-in-position-0-in
+        pem_bytes = pem_pub[27:-25]
+        pem_str = "".join(pem_pub.decode("utf-8").splitlines()[1:-2])
+        self.details=pem_str
+        self.address = hashlib.sha256(pem_str.encode("utf-8")).hexdigest()
+
+        pub_file = f"{keys_folder}/{self.address}.pem"
         # if not os.path.exists(pub_file):
         with open(pub_file, "wb+") as f:
             f.write(pem_pub)
-        
-        # reference used to remove unicode error https://stackoverflow.com/questions/42339876/error-unicodedecodeerror-utf-8-codec-cant-decode-byte-0xff-in-position-0-in
-        pem_bytes = pem_pub[27:-25]
-        self.address = hashlib.sha256(pem_bytes).hexdigest()
-        pem_str = "".join(pem_pub.decode("utf-8").splitlines()[1:-2])
-        self.address = hashlib.sha256(pem_str.encode("utf-8")).hexdigest()
-
 
     def send(self, to_address: str, amount: int) -> str:
         """
@@ -85,13 +83,12 @@ class Wallet:
         self.signature = private_key.sign(
             message,
             padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashes.SHA256()
+            hashes.SHA256(),
         )
 
-        return new_transaction(self.address, to_address, amount, self.signature.hex(), self.name)
+        return new_transaction(self.address, to_address, amount, self.signature.hex(), self.address,self.details)
 
     def check_balance(self, address: str = "") -> int:
         """
@@ -101,14 +98,10 @@ class Wallet:
         """
         if address == "":
             address = self.address
-        
-        # TODO: load account state file (JSON) into a dictionary
-        balance_dict= account_state.load_account_state()
-        
-        # TODO: return the value in the account state dictionary under the given address
-        # if balance_dict:
+
+        balance_dict = account_state.load_account_state()
+
         try:
             return balance_dict[address]
-        except: 
+        except:
             return 0
-        # return 0 

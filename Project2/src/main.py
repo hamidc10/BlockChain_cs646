@@ -16,7 +16,6 @@ from constants import (
 
 
 def init_dirs():
-
     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
     for wallet in Wallet_folder:
         # adding the current wallet_skeleton.py to the wallet
@@ -34,7 +33,7 @@ def init_dirs():
         processed_transactions_folder,
         pending_transactions_folder,
     ]
-    
+
     # initializing the directories if they don't already exist
     for dir in directories:
         if not os.path.exists(dir):
@@ -90,7 +89,7 @@ def main():
             else:
                 to_address = other_wallets[1].address
             amount = input("Enter the amount you would like to send: ")
-            
+
             # Create transaction with wallet
             transaction_file_path = selected_wallet.send(to_address, int(amount))
             block.new_block(transaction_file_path)
@@ -108,7 +107,7 @@ def main():
                 other_wallet = other_wallets[0]
             else:
                 other_wallet = other_wallets[1]
-            
+
             # Check balance of other wallet using this wallet
             balance = selected_wallet.check_balance(other_wallet.address)
             print(f"Other account balance ({other_wallet.name}): {balance}")
