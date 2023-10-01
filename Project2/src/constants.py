@@ -3,9 +3,9 @@
 # Student initials: HC, CRW, VVS, TC, XM
 # Date: 10/1/23
 
-keys_folder = "./keys/"
+keys_folder = "./public_keys/"
 blocks_folder = "./blocks/"
 pending_transactions_folder = "./pending/"
 processed_transactions_folder = "./processed/"
+wallet_skeleton = "./wallet_skeleton.py"
 account_state_file_path = "./account_state.json"
-keys={"Wallet1":"./Wallet1/private.pem","Wallet2":"./Wallet2/private.pem","Wallet3":"./Wallet3/private.pem"}

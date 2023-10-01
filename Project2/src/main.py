@@ -3,58 +3,47 @@
 # Student initials: HC, CRW, VVS, TC, XM
 # Date: 10/1/23
 
-from block import Block
 import os
 import shutil
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives import serialization, hashes
-from constants import keys
-import json
+from block import Block
+from constants import (
+    keys_folder,
+    blocks_folder,
+    processed_transactions_folder,
+    pending_transactions_folder,
+    wallet_skeleton,
+)
+
+
+def init_dirs():
+
+    Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
+    for wallet in Wallet_folder:
+        # adding the current wallet_skeleton.py to the wallet
+        os.makedirs(wallet, exist_ok=True)
+        shutil.copy(wallet_skeleton, f"{wallet}/wallet.py")
+
+        # path_py = os.path.join(wallet, "__init__.py")
+        # if not os.path.exists(path_py):
+        #     with open(path_py, "w") as f:
+        #         pass
+
+    directories = [
+        keys_folder,
+        blocks_folder,
+        processed_transactions_folder,
+        pending_transactions_folder,
+    ]
+    
+    # initializing the directories if they don't already exist
+    for dir in directories:
+        if not os.path.exists(dir):
+            os.makedirs(dir, exist_ok=True)
+
+    main()
 
 
 def main():
-    source_pth = "wallet.py"
-    Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
-    for wallet in Wallet_folder:
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-        )
-        pem_priv = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        # pem_priv.splitlines()[0]
-        # public_key = private_key.public_key()
-        # pem_pub = public_key.public_bytes(
-        #     encoding=serialization.Encoding.PEM,
-        #     format=serialization.PublicFormat.SubjectPublicKeyInfo
-        # )
-        # pem_pub.splitlines()[0]
-
-        if not os.path.exists(wallet):
-            os.makedirs(wallet, exist_ok=True)
-            shutil.copy(source_pth, wallet)
-
-        # path_pb = os.path.join(wallet, "public.pem")
-        path_pv = os.path.join(wallet, "private.pem")
-        path_py = os.path.join(wallet, "__init__.py")
-        if (
-            # not os.path.exists(path_pb)
-            not os.path.exists(path_pv)
-            or not os.path.exists(path_py)
-        ):
-            # with open(path_pb, "wb+") as f:
-            #      f.write(pem_pub)
-            with open(path_pv, "wb+") as f:
-                f.write(pem_priv)
-            with open(path_py, "w") as f:
-                pass
-    driver()
-
-
-def driver():
     from Wallet1.wallet import Wallet as W1
     from Wallet2.wallet import Wallet as W2
     from Wallet3.wallet import Wallet as W3
@@ -73,7 +62,6 @@ def driver():
         print(f" 1. Wallet 1 address {wallet1.address}")
         print(f" 2. Wallet 2 address {wallet2.address}")
         print(f" 3. Wallet 3 address {wallet3.address}")
-        print(f" 4. Create a Wallet")
         choice = input("Input # of your choice: ")
 
         if choice == "1":
@@ -102,32 +90,15 @@ def driver():
             else:
                 to_address = other_wallets[1].address
             amount = input("Enter the amount you would like to send: ")
+            
             # Create transaction with wallet
-            print(type(to_address))
-            transaction_file_path, message = selected_wallet.send(to_address, int(amount))
-            # Validate transaction on blockchain
-            pem = open(keys[selected_wallet.name], "rb")
-            public_key = serialization.load_pem_private_key(
-                pem.read(), password=None
-            ).public_key()
-            garbage_message=json.dumps({"j":"jkl"}).encode("utf-8") 
-            # replace message below with garbage message to see what happens if unable to verify
-            try:
-                public_key.verify(
-                    selected_wallet.signature,
-                    message,
-                    padding.PSS(
-                        mgf=padding.MGF1(hashes.SHA256()),
-                        salt_length=padding.PSS.MAX_LENGTH,
-                    ),
-                    hashes.SHA256(),
-                )
-                block.new_block(transaction_file_path)
-            except:
-                print("Unable to verify signature")
+            transaction_file_path = selected_wallet.send(to_address, int(amount))
+            block.new_block(transaction_file_path)
+
         elif choice == "2":
             balance = selected_wallet.check_balance()
             print(f"Your account balance ({selected_wallet.name}): {balance}")
+
         else:
             print("\n--- Select wallet to check balance of ---")
             print(f"1. {other_wallets[0].name}")
@@ -137,10 +108,11 @@ def driver():
                 other_wallet = other_wallets[0]
             else:
                 other_wallet = other_wallets[1]
+            
             # Check balance of other wallet using this wallet
             balance = selected_wallet.check_balance(other_wallet.address)
             print(f"Other account balance ({other_wallet.name}): {balance}")
 
 
 if __name__ == "__main__":
-    main()
+    init_dirs()
