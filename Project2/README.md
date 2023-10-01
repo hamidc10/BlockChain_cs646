@@ -1,6 +1,12 @@
-# Blockchain Project 2
+# Group 3
 
-## How To Test
+###### By: Hamid Choucha, Chantel Rose Walia, Xavier Martinez, Vira Shankar, Trey Carroll 
+  
+---------------------------------------------------------------------------------------------------
+
+## Blockchain Project 2
+
+### How to Test
 
 First make sure to make sure that you pip install -r requirements.txt
 
