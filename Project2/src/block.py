@@ -1,3 +1,7 @@
+# We (Hamid, Chantel, Vira, Trey, Xavier) declare that we have completed this computer code in accordance with the UAB Academic Integrity Code and the UAB CS Honor Code.
+# We have read the UAB Academic Integrity Code and understand that any breach of the Code may result in severe penalties.
+# Student initials: HC, CRW, VVS, TC, XM
+# Date: 10/1/23
 import datetime
 import json
 import hashlib
@@ -9,6 +13,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 
 from account_state import init_account_state, load_account_state, save_account_state
 from constants import (
+    account_state_file_path,
     pending_transactions_folder,
     processed_transactions_folder,
     blocks_folder,
@@ -36,7 +41,8 @@ class Block:
         self.file_hash_list = []
         self.block_hash_list = []
         self.print_block = print_block
-        init_account_state()
+        if not os.path.exists(account_state_file_path):
+            init_account_state()
 
     def new_block(self, transaction_hash: str):
         """
