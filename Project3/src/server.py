@@ -1,5 +1,9 @@
 # application that hosts connection
 import socket
+import os
+
+file_size = os.path.getsize("myfile.txt")
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # what ip/port we want the server to be on
@@ -13,3 +17,20 @@ s.listen(5)
 while True:
     clientsocket, address = s.accept()
     print ("connection from " + str(address) + " has been established!")
+
+    clientsocket.send(b"Connection Established")
+
+    my_message = clientsocket.recv(100)
+    print(my_message.decode("UTF-8)"))
+
+    my_message = clientsocket.recv(100)
+    print(my_message.decode("UTF-8"))
+    
+    clientsocket.send(str(file_size).encode())
+
+
+    #clientsocket.send(b"Goodbye")
+    f = open("myfile.txt", "rb")
+    content = f.read()
+    f.close()
+    clientsocket.send(content)
