@@ -3,6 +3,10 @@ import socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #server we want client to connect to
+
+# Should set this up so it can be implemented in each node i believe? 
+
+
 server = ("127.0.0.1",5555)
 s.connect(server)
 response = s.recv(100)

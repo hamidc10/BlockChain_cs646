@@ -13,7 +13,7 @@ s.bind(server)
 #establishes how many connections we want the server to listen for
 s.listen(5)
 
-# loop to keep connection going
+# loop to keep connection going and send messages, should expand on this potentially to have communications between nodes?
 while True:
     clientsocket, address = s.accept()
     print ("connection from " + str(address) + " has been established!")
@@ -34,3 +34,5 @@ while True:
     content = f.read()
     f.close()
     clientsocket.send(content)
+
+# need to set up error handling so that way we do not keep getting "address in use" errors.
