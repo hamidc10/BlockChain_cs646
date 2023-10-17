@@ -2,7 +2,7 @@
 import socket
 import os
 
-file_size = os.path.getsize("myfile.txt")
+file_size = os.path.getsize("Node1Comms.txt")
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

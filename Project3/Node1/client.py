@@ -20,7 +20,7 @@ my_size = int(response)
 
 content = s.recv(my_size)
 
-f = open("Newfile.txt", "wb")
+f = open("Node1Comms.txt", "wb")
 f.write(content)
 f.close()
 

@@ -5,9 +5,9 @@ import socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #server we want client to connect to
-# server = ("127.0.0.1",5555)
+# server = ("127.0.0.1",5556)
 # s.connect(server)
-s.connect(("127.0.0.1",5555))
+s.connect(("127.0.0.1",5556))
 response = s.recv(100)
 print(response.decode("UTF-8"))
 
@@ -20,7 +20,7 @@ my_size = int(response)
 
 content = s.recv(my_size)
 
-f = open("Newfile.txt", "wb")
+f = open("Node2Comms.txt", "wb")
 f.write(content)
 f.close()
 

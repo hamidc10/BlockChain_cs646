@@ -2,12 +2,12 @@
 import socket
 import os
 
-file_size = os.path.getsize("myfile.txt")
+file_size = os.path.getsize("Node3Comms.txt")
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # what ip/port we want the server to be on
-server = ("127.0.0.1",5555)
+server = ("127.0.0.1",5557)
 s.bind(server)
 #establishes how many connections we want the server to listen for
 s.listen(5)
@@ -24,7 +24,7 @@ while True:
 
     clientsocket.send(str(file_size).encode())
 
-    f = open("myfile.txt","rb")
+    f = open("Node3Comms.txt","rb")
     content = f.read()
     f.close()
     clientsocket.send(content)
