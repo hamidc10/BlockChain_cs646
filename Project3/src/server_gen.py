@@ -14,8 +14,8 @@ def init_nodes():
 ports = [1001, 1002, 1003]  # Unique ports for each server
 
 def server_start(node_folder, port):
-    server_module = f"{node_folder}.server"
-    server = __import__(server_module, fromlist=['Server'])
+    node_s = f"{node_folder}.server"
+    server = __import__(node_s, fromlist=['Server'])
     server_call = server.Server(port)
     server_call.run()
 

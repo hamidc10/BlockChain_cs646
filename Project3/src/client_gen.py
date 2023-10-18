@@ -11,14 +11,13 @@ def init_nodes():
     main(ports)
 
 ports = [1001, 1002, 1003]
-#Used this to help me with simplifying the names of the imports
+#Found out I can do this to help with reducing imports since it was givng me an issue
 #https://www.programiz.com/python-programming/methods/built-in/__import__
 def client_start(node_folder, port):
-    client_node = f"{node_folder}.client"
-    client = __import__(client_node, fromlist=['Client'])
+    node_c = f"{node_folder}.client"
+    client = __import__(node_c, fromlist=['Client'])
     client_call = client.Client(port)
     client_call.run()
-    
 #Used to help with threading
 #https://www.codecademy.com/resources/docs/python/threading/thread
 #https://docs.python.org/3/library/threading.html
