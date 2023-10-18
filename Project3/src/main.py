@@ -5,6 +5,7 @@
 
 import os
 import shutil
+import threading
 from block import Block
 from constants import (
     keys_folder,
@@ -12,43 +13,82 @@ from constants import (
     processed_transactions_folder,
     pending_transactions_folder,
     wallet_skeleton,
+    client_skeleton
 )
 
-
-def init_dirs():
+ports = [1001, 1002, 1003]
+def init_nodes():
+    Nodes_folder = ["Node1", "Node2", "Node3"]
     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
-    # adding the current wallet_skeleton.py to each "Wallet"
-    for wallet in Wallet_folder:
-        os.makedirs(wallet, exist_ok=True)
-        shutil.copy(wallet_skeleton, f"{wallet}/wallet.py")
+    
+    for node, wallet in zip(Nodes_folder, Wallet_folder):
+        # Create the Node folder
+        os.makedirs(node, exist_ok=True)
+        os.makedirs(os.path.join(node, wallet), exist_ok=True)
+        shutil.copy(client_skeleton, f"{node}/client.py")
+        shutil.copy(wallet_skeleton, os.path.join(node, wallet, "wallet.py"))
+        
+        directories = [
+            keys_folder,
+            blocks_folder,
+            processed_transactions_folder,
+            pending_transactions_folder,
+        ]
+        
+        for dir in directories:
+            if not os.path.exists(f"{node}/{dir}"):
+                os.makedirs(os.path.join(node, dir), exist_ok=True)
 
-    directories = [
-        keys_folder,
-        blocks_folder,
-        processed_transactions_folder,
-        pending_transactions_folder,
-    ]
+    main(ports)
 
-    # initializing the directories if they don't already exist
-    for dir in directories:
-        if not os.path.exists(dir):
-            os.makedirs(dir, exist_ok=True)
-
-    main()
+def client_start(node_folder, port):
+    node_c = f"{node_folder}.client"
+    client = __import__(node_c, fromlist=['Client'])
+    client_call = client.Client(port)
+    client_call.run()
 
 
-def main():
-    from Wallet1.wallet import Wallet as W1
-    from Wallet2.wallet import Wallet as W2
-    from Wallet3.wallet import Wallet as W3
+# def init_dirs():
+#     Wallet_folder = ["Wallet1", "Wallet2", "Wallet3"]
+#     # adding the current wallet_skeleton.py to each "Wallet"
+#     for wallet in Wallet_folder:
+#         os.makedirs(wallet, exist_ok=True)
+#         shutil.copy(wallet_skeleton, f"{wallet}/wallet.py")
+
+#     directories = [
+#         keys_folder,
+#         blocks_folder,
+#         processed_transactions_folder,
+#         pending_transactions_folder,
+#     ]
+
+#     # initializing the directories if they don't already exist
+#     for dir in directories:
+#         if not os.path.exists(dir):
+#             os.makedirs(dir, exist_ok=True)
+    
+
+
+def main(ports):
+    from Node1.Wallet1.wallet import Wallet as W1
+    from Node2.Wallet2.wallet import Wallet as W2
+    from Node3.Wallet3.wallet import Wallet as W3
+
+    threads = []
+    for i, node_folder in enumerate(["Node1", "Node2", "Node3"]):
+        t = threading.Thread(target=client_start, args=(node_folder, ports[i]))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
 
     print("Project 2 by Group 3\n")
     print_blocks = input("Enable printing blocks to terminal? (y/n): ")
     block = Block(print_blocks)
 
-    wallet1 = W1("Wallet1")
-    wallet2 = W2("Wallet2")
-    wallet3 = W3("Wallet3")
+    wallet1 = W1("Node1","Wallet1")
+    wallet2 = W2("Node2","Wallet2")
+    wallet3 = W3("Node3","Wallet3")
 
     while True:
         print("\n--- Select a wallet ---")
@@ -122,4 +162,6 @@ def main():
 
 
 if __name__ == "__main__":
-    init_dirs()
+    init_nodes()
+    
+    # init_dirs()
