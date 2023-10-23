@@ -7,11 +7,14 @@ import os
 import random
 
 from src.wallet import Wallet
+from src.account_state import init_account_state
 from src.constants import pending_transactions_folder
 
 
 # Driver code
 def main():
+    init_account_state()
+
     print("Project 3 by Group 3\n")
     wallet1 = Wallet("Wallet A")
     wallet2 = Wallet("Wallet B")

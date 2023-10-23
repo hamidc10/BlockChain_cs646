@@ -11,7 +11,7 @@ from Crypto.Signature import pkcs1_15
 
 from src.transaction import new_transaction
 from src.account_state import load_account_state
-from src.constants import keys_folder
+from src.constants import keys_folder, coinbase_address, default_wallet_balance
 
 
 class Wallet:
@@ -84,6 +84,20 @@ class Wallet:
             transactions_folder,
         )
 
+    def create_coinbase(self, transactions_folder: str) -> str:
+        """
+        Creates a coinbase transaction (which sends amount=1000 from COINBASE to this wallet)
+        and returns the hash of the transaction.
+        """
+        return new_transaction(
+            coinbase_address,
+            self.address,
+            default_wallet_balance,
+            self.signature,
+            self.public_key_file_path,
+            transactions_folder,
+        )
+
     def check_balance(self, address: str = "") -> int:
         """
         Returns the account balance of the user with the given address
@@ -95,4 +109,4 @@ class Wallet:
         # load account state file (JSON) into a dictionary
         account_dict = load_account_state()
         # return the value in the account state dictionary under the given address
-        return account_dict.get(address, 0)
+        return account_dict.get(address, default_wallet_balance)

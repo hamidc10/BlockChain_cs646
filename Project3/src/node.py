@@ -22,11 +22,14 @@ from src.account_state import (
     load_account_state,
     save_account_state,
 )
+from src.wallet import Wallet
 from src.connector import NodeConnector
 from src.constants import (
     pending_transactions_folder,
     processed_transactions_folder,
     blocks_folder,
+    coinbase_address,
+    default_wallet_balance,
 )
 
 
@@ -39,6 +42,7 @@ class Node:
     other_node_socket_ports: List[int]
     file_hash_list: List[str]
     block_hash_list: List[str]
+    wallet: Wallet
 
     def __init__(
         self,
@@ -64,17 +68,36 @@ class Node:
         self.file_hash_list = []
         self.block_hash_list = []
 
-        init_account_state()
+        self.wait_for_other_nodes_to_start()
+        self.wallet = Wallet(folder)  # For creating coinbase
+        if not os.listdir(self.blocks_folder):  # Blocks folder empty
+            # Create coinbase
+            print("Creating coinbase")
+            self.wallet.create_coinbase(self.pending_transactions_folder)
+        else:
+            print("Coinbase already created")
+
+    def wait_for_other_nodes_to_start(self):
+        print("Waiting for other nodes to start")
+        other_nodes_are_ready = False
+        while not other_nodes_are_ready:
+            other_nodes_are_ready = True
+            for port in self.other_node_socket_ports:
+                try:
+                    self.connector.connect_to_server_socket(port)
+                except:
+                    other_nodes_are_ready = False
+                time.sleep(1)
+        print("Other nodes are ready")
 
     def new_block(self, transaction_hash: str) -> str | None:
         """
         Receives the file_name that is to be added to the block.
         Once the data is received it then gets put into a dictionary called 'block' as a value to the 'body' key.
         The block is then converted to JSON.
-        Returns the block name, or None if the transaction is invalid.
+        Returns the block name, or None if the transaction is a coinbase or invalid
+        (coinbase/invalid transactions should not be shared with other nodes).
         """
-
-        self.file_hash_list.append(transaction_hash)
 
         current_time = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(current_time))
@@ -91,9 +114,31 @@ class Node:
             body_dict = {"hash": transaction_hash, "content": json.loads(f.read())}
             body_list.append(body_dict)
 
+        transaction = body_dict["content"]
+
+        # Prevent negative transactions
+        if transaction["Amount"] < 0:
+            print("Invalid transaction (amount cannot be negative); REJECTED")
+            return None
+
+        # Validate coinbase transactions
+        if transaction["From"] == coinbase_address:
+            if os.listdir(self.blocks_folder):  # Blocks folder not empty
+                print("Invalid coinbase (must be first): REJECTED")
+                return None
+            if transaction["Amount"] != default_wallet_balance:
+                print("Invalid coinbase (unexpected amount): REJECTED")
+                return None
+
+        # Validate sender balance (does not apply to coinbase)
+        else:
+            sender_balance = self.wallet.check_balance(transaction["From"])
+            if transaction["Amount"] > sender_balance:
+                print("Invalid transaction (sender does not have enough); REJECTED")
+                return None
+
         # Validate transaction signature
         # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
-        transaction = body_dict["content"]
         with open(transaction["PublicKeyFilePath"], "rb") as f:
             public_key_bytes = f.read()
         # We assume that this is the message of the signature:
@@ -105,11 +150,12 @@ class Node:
         signature = bytes.fromhex(transaction["Signature"])
         try:
             pkcs1_15.new(public_key).verify(public_key_hash, signature)
-            print("The transaction signature is valid!")
+            print("The transaction signature is valid: ACCEPTED")
         except (ValueError, TypeError):
-            print("The transaction signature is not valid!")
-            return None
+            print("The transaction signature is not valid: REJECTED")
+            return None  # Invalid transactions should not be shared with other nodes
 
+        self.file_hash_list.append(transaction_hash)
         height = self.file_hash_list.index(transaction_hash)
         if height == 0:
             previousblock_hash = "NA"
@@ -165,12 +211,18 @@ class Node:
         from_address = transaction["From"]
         to_address = transaction["To"]
         account_state = load_account_state()
-        account_state[from_address] = account_state.get(from_address, 0) - amount
-        account_state[to_address] = account_state.get(to_address, 0) + amount
+        account_state[from_address] = (
+            account_state.get(from_address, default_wallet_balance) - amount
+        )
+        account_state[to_address] = (
+            account_state.get(to_address, default_wallet_balance) + amount
+        )
         save_account_state(account_state)
 
         print("New Block:\n", json.dumps(block, indent=2))
 
+        if transaction["From"] == coinbase_address:
+            return None  # Coinbases should not be shared with other nodes
         return block_name
 
     def process_pending_transactions(self):
@@ -223,9 +275,9 @@ class Node:
         try:
             while True:
                 self.process_pending_transactions()
-                time.sleep(2)
+                time.sleep(1)
                 self.receive_processed_transaction_and_block()
-                time.sleep(2)
+                time.sleep(1)
                 print()
         except KeyboardInterrupt:
             pass

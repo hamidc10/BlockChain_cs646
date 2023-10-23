@@ -7,6 +7,9 @@ node1_port = 5001
 node2_port = 5002
 node3_port = 5003
 
+coinbase_address = "COINBASE"
+default_wallet_balance = 1000
+
 keys_folder = "keys"
 blocks_folder = "blocks"
 pending_transactions_folder = "pending"

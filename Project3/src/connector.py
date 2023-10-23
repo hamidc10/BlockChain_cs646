@@ -24,7 +24,7 @@ Each message is made up of 4 sends/receives on the socket:
 3. The server sends the message content
 4. The client confirms that it received the message content
 
-Connection logs are saved to socket_server.log and socket_client.log files.
+Connection logs are printed and saved to log files.
 """
 
 
