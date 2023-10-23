@@ -1,14 +1,14 @@
 # We (Hamid, Chantel, Vira, Trey, Xavier) declare that we have completed this computer code in accordance with the UAB Academic Integrity Code and the UAB CS Honor Code.
 # We have read the UAB Academic Integrity Code and understand that any breach of the Code may result in severe penalties.
 # Student initials: HC, CRW, VVS, TC, XM
-# Date: 10/1/23
-keys_folder = "./public_keys/"
-blocks_folder = "./blocks/"
-pending_transactions_folder = "./pending/"
-processed_transactions_folder = "./processed/"
-wallet_skeleton = "./wallet_skeleton.py"
-account_state_file_path = "./account_state.json"
-client_skeleton="./client_skeleton.py"
-block_skeleton="./block.py"
-transaction_skeleton="./transaction.py"
-server_skeleton="./server_skeleton.py"
+# Date: 10/22/23
+
+node1_port = 5001
+node2_port = 5002
+node3_port = 5003
+
+keys_folder = "keys"
+blocks_folder = "blocks"
+pending_transactions_folder = "pending"
+processed_transactions_folder = "processed"
+account_state_file_path = "account_state.json"
