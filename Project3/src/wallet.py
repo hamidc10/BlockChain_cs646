@@ -4,10 +4,9 @@
 # Date: 10/22/23
 
 import os
-
-from Crypto.Hash import SHA256
-from Crypto.PublicKey import RSA
-from Crypto.Signature import pkcs1_15
+import hashlib
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
 
 from src.transaction import new_transaction
 from src.account_state import load_account_state
@@ -48,27 +47,44 @@ class Wallet:
                 private_key_bytes = f.read()
         else:
             # if the keys don't exist, create/save a new RSA public/private key pair for the user
-            # https://pycryptodome.readthedocs.io/en/latest/src/public_key/rsa.html
-            private_key = RSA.generate(2048)
-            private_key_bytes = private_key.export_key()
-            public_key_bytes = private_key.publickey().export_key()
+            private_key = rsa.generate_private_key(
+                public_exponent=65537,
+                key_size=2048,
+            )
+            private_key_bytes = private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+            public_key_bytes = private_key.public_key().public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            )
             with open(self.private_key_file_path, "wb") as f:
                 f.write(private_key_bytes)
             with open(self.public_key_file_path, "wb") as f:
                 f.write(public_key_bytes)
 
         # set user address to be the SHA256 hash of the user's public key
-        # https://pycryptodome.readthedocs.io/en/latest/src/hash/sha256.html
-        public_key_hash = SHA256.new(public_key_bytes)
+        public_key_hash = hashlib.sha256(public_key_bytes)
         # convert hash binary into hexadecimal string so it is printable
         public_key_hash_str = public_key_hash.hexdigest()
         self.address = public_key_hash_str
 
         # set user signature to be the user address signed by the user's private key
-        # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
-        private_key = RSA.import_key(private_key_bytes)
+        private_key = serialization.load_pem_private_key(
+            private_key_bytes,
+            password=None,
+        )
         # public_key_hash is the binary value of the user address
-        self.signature = pkcs1_15.new(private_key).sign(public_key_hash)
+        self.signature = private_key.sign(
+            public_key_hash.digest(),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH,
+            ),
+            hashes.SHA256(),
+        )
 
     def send(self, to_address: str, amount: int, transactions_folder: str) -> str:
         """

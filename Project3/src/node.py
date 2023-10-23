@@ -13,9 +13,9 @@ import shutil
 
 from typing import List
 
-from Crypto.Hash import SHA256
-from Crypto.PublicKey import RSA
-from Crypto.Signature import pkcs1_15
+import hashlib
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
 
 from src.account_state import update_account_state
 from src.wallet import Wallet
@@ -160,13 +160,21 @@ class Node:
             public_key_bytes = f.read()
         # We assume that this is the message of the signature:
         # This is the same as the binary value of the sender address:
-        public_key_hash = SHA256.new(public_key_bytes)
+        public_key_hash = hashlib.sha256(public_key_bytes)
         # Importing the public key to an RSA object used for validation:
-        public_key = RSA.import_key(public_key_bytes)
+        public_key = serialization.load_pem_public_key(public_key_bytes)
         # Have to convert signature back from hexadecimal:
         signature = bytes.fromhex(transaction["Signature"])
         try:
-            pkcs1_15.new(public_key).verify(public_key_hash, signature)
+            public_key.verify(
+                signature,
+                public_key_hash.digest(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
+                hashes.SHA256(),
+            )
             print("The transaction signature is valid: ACCEPTED")
         except (ValueError, TypeError):
             print("The transaction signature is not valid: REJECTED")
