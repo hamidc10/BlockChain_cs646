@@ -7,6 +7,14 @@
 * run `python3 -m node3.main` from the Project3 directory in a separate terminal
 * run `python3 -m main` from the Project3 directory in a separate terminal and follow the prompts
 
+after running a few tests, you can see that:
+
+* coinbases are created for each node
+* transactions and blocks are synced between nodes (in node1, node2, node3 folders)
+* account state for nodes and test wallets is updated (account_state.json)
+* node logs are printed in the node terminals showing transactions validated and blocks created
+* node socket logs are saved to socket.log file in node1, node2, node3 folders
+
 ## Bonus
 
 we did 2 bonus tasks:
