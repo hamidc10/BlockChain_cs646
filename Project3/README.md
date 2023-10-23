@@ -7,11 +7,6 @@
 * run `python3 -m node3.main` from the Project3 directory in a separate terminal
 * run `python3 -m main` from the Project3 directory in a separate terminal and follow the prompts
 
-## Known issues
-
-* account state file is not always accurate because of conflicts when multiple nodes update it at the same time
-* block heights are not always accurate after restarting the nodes
-
 ## Bonus
 
 we did 2 bonus tasks:

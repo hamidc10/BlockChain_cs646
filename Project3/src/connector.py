@@ -155,7 +155,11 @@ class NodeConnector:
         self.log(f"Sent BLOCK file {file_name} to client from {file_path}")
         self.log("---")
 
-    def receive_file(self, server_socket: socket.socket):
+    def receive_file(self, server_socket: socket.socket) -> str:
+        """
+        Receives and saves a transaction or block file from the server socket
+        and returns the file name without the .json suffix.
+        """
         self.log("Receiving file")
 
         # receive file type
@@ -186,3 +190,5 @@ class NodeConnector:
             f.write(file_content)
         self.log(f"Saved file to {file_path}")
         self.log("---")
+
+        return file_name.removesuffix(".json")

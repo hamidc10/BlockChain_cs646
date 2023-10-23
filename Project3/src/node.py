@@ -17,17 +17,14 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 
-from src.account_state import (
-    init_account_state,
-    load_account_state,
-    save_account_state,
-)
+from src.account_state import update_account_state
 from src.wallet import Wallet
 from src.connector import NodeConnector
 from src.constants import (
     pending_transactions_folder,
     processed_transactions_folder,
     blocks_folder,
+    node_state_file_name,
     coinbase_address,
     default_wallet_balance,
 )
@@ -37,10 +34,11 @@ class Node:
     pending_transactions_folder: str
     processed_transactions_folder: str
     blocks_folder: str
+    node_state_file_path: str
     connector: NodeConnector
     node_socket: socket.socket
     other_node_socket_ports: List[int]
-    file_hash_list: List[str]
+    transaction_hash_list: List[str]
     block_hash_list: List[str]
     wallet: Wallet
 
@@ -57,6 +55,7 @@ class Node:
             folder, processed_transactions_folder
         )
         self.blocks_folder = os.path.join(folder, blocks_folder)
+        self.node_state_file_path = os.path.join(folder, node_state_file_name)
         os.makedirs(self.pending_transactions_folder, exist_ok=True)
         os.makedirs(self.processed_transactions_folder, exist_ok=True)
         os.makedirs(self.blocks_folder, exist_ok=True)
@@ -65,8 +64,8 @@ class Node:
         self.node_socket = self.connector.open_server_socket(socket_port)
         self.other_node_socket_ports = other_node_socket_ports
 
-        self.file_hash_list = []
-        self.block_hash_list = []
+        # Set self.transaction_hash_list and self.block_hash_list
+        self.load_node_state()
 
         self.wait_for_other_nodes_to_start()
         self.wallet = Wallet(folder)  # For creating coinbase
@@ -76,6 +75,24 @@ class Node:
             self.wallet.create_coinbase(self.pending_transactions_folder)
         else:
             print("Coinbase already created")
+
+    def load_node_state(self):
+        if os.path.exists(self.node_state_file_path):
+            with open(self.node_state_file_path, "r") as f:
+                node_state = json.load(f)
+            self.transaction_hash_list = node_state.get("transaction_hash_list", [])
+            self.block_hash_list = node_state.get("block_hash_list", [])
+        else:
+            self.transaction_hash_list = []
+            self.block_hash_list = []
+
+    def save_node_state(self):
+        with open(self.node_state_file_path, "w+") as f:
+            node_state = {
+                "transaction_hash_list": self.transaction_hash_list,
+                "block_hash_list": self.block_hash_list,
+            }
+            json.dump(node_state, f)
 
     def wait_for_other_nodes_to_start(self):
         print("Waiting for other nodes to start")
@@ -155,8 +172,8 @@ class Node:
             print("The transaction signature is not valid: REJECTED")
             return None  # Invalid transactions should not be shared with other nodes
 
-        self.file_hash_list.append(transaction_hash)
-        height = self.file_hash_list.index(transaction_hash)
+        self.transaction_hash_list.append(transaction_hash)
+        height = self.transaction_hash_list.index(transaction_hash)
         if height == 0:
             previousblock_hash = "NA"
         else:
@@ -207,17 +224,10 @@ class Node:
         shutil.move(src_path, dst_path)
 
         # Update account state file with new balances
-        amount = transaction["Amount"]
-        from_address = transaction["From"]
-        to_address = transaction["To"]
-        account_state = load_account_state()
-        account_state[from_address] = (
-            account_state.get(from_address, default_wallet_balance) - amount
-        )
-        account_state[to_address] = (
-            account_state.get(to_address, default_wallet_balance) + amount
-        )
-        save_account_state(account_state)
+        update_account_state(transaction)
+
+        # Save updated node state (self.transaction_hash_list and self.block_hash_list)
+        self.save_node_state()
 
         print("New Block:\n", json.dumps(block, indent=2))
 
@@ -264,9 +274,16 @@ class Node:
             other_node_socket = self.connector.connect_to_client_socket(
                 self.node_socket
             )
-            self.connector.receive_file(other_node_socket)  # Transaction
-            self.connector.receive_file(other_node_socket)  # Block
+            # Receive transaction
+            transaction_hash = self.connector.receive_file(other_node_socket)
+            self.transaction_hash_list.append(transaction_hash)
+            # Receive block
+            block_hash = self.connector.receive_file(other_node_socket)
+            self.block_hash_list.append(block_hash)
+            # Close socket
             other_node_socket.close()
+            # Save updated node state (self.transaction_hash_list and self.block_hash_list)
+            self.save_node_state()
         except:  # To ignore timeouts when nothing is being sent
             print("Received no new transactions from other nodes")
 
@@ -274,9 +291,9 @@ class Node:
         print("\nNode running\n")
         try:
             while True:
-                self.process_pending_transactions()
-                time.sleep(1)
                 self.receive_processed_transaction_and_block()
+                time.sleep(1)
+                self.process_pending_transactions()
                 time.sleep(1)
                 print()
         except KeyboardInterrupt:

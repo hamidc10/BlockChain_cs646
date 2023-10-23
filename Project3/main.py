@@ -4,17 +4,15 @@
 # Date: 10/22/23
 
 import os
+import time
 import random
 
 from src.wallet import Wallet
-from src.account_state import init_account_state
 from src.constants import pending_transactions_folder
 
 
 # Driver code
 def main():
-    init_account_state()
-
     print("Project 3 by Group 3\n")
     wallet1 = Wallet("Wallet A")
     wallet2 = Wallet("Wallet B")
@@ -28,9 +26,9 @@ def main():
 
     while True:
         print("\n--- Select your wallet ---")
-        print(f"1. {wallet1.name}")
-        print(f"2. {wallet2.name}")
-        print(f"3. {wallet3.name}")
+        print(f"1. {wallet1.name} (balance: {wallet1.check_balance()})")
+        print(f"2. {wallet2.name} (balance: {wallet2.check_balance()})")
+        print(f"3. {wallet3.name} (balance: {wallet3.check_balance()})")
         choice = input("Input # of your choice: ")
         if choice == "1":
             selected_wallet = wallet1
@@ -63,6 +61,9 @@ def main():
             transactions_folder = os.path.join(node_folder, pending_transactions_folder)
             # Create transaction with wallet
             selected_wallet.send(to_address, int(amount), transactions_folder)
+            # Give some time for node to process transaction
+            print("Waiting 3 seconds for node to process transaction before moving on")
+            time.sleep(3)
         elif choice == "2":
             balance = selected_wallet.check_balance()
             print(f"Your account balance ({selected_wallet.name}): {balance}")
