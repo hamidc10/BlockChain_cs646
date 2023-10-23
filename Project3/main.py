@@ -49,7 +49,7 @@ def main():
             print("\n--- Select wallet to send to  ---")
             print(f"1. {other_wallets[0].name}")
             print(f"2. {other_wallets[1].name}")
-            choice = input("Input letter of your choice: ")
+            choice = input("Input # of your choice: ")
             if choice == "1":
                 to_address = other_wallets[0].address
             else:
