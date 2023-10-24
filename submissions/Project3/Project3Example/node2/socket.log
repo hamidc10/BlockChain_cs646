@@ -1,0 +1,63 @@
+Waiting for client connection
+Opening server socket ('127.0.0.1', 5002)
+Opened server socket ('127.0.0.1', 5002)
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Connecting to server ('127.0.0.1', 5003)
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Connecting to server ('127.0.0.1', 5003)
+Connected to server ('127.0.0.1', 5003)
+Waiting for client connection
+Connected to client ('127.0.0.1', 58981)
+Receiving file
+Waiting for client connection
+Connected to client ('127.0.0.1', 58986)
+Receiving file
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 58988)
+Receiving file
+File type: TRANSACTION
+File name: 755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json
+Saved file to node2/processed/755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json
+---
+Receiving file
+File type: BLOCK
+File name: 91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json
+Saved file to node2/blocks/91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json
+---
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 58993)
+Receiving file
+File type: TRANSACTION
+File name: e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json
+Saved file to node2/processed/e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json
+---
+Receiving file
+File type: BLOCK
+File name: 22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json
+Saved file to node2/blocks/22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json
+---
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection

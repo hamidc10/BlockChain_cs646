@@ -1,0 +1,73 @@
+Waiting for client connection
+Waiting for client connection
+Opening server socket ('127.0.0.1', 5001)
+Opened server socket ('127.0.0.1', 5001)
+Connecting to server ('127.0.0.1', 5002)
+Connecting to server ('127.0.0.1', 5003)
+Connecting to server ('127.0.0.1', 5002)
+Connected to server ('127.0.0.1', 5002)
+Connecting to server ('127.0.0.1', 5003)
+Connected to server ('127.0.0.1', 5003)
+Waiting for client connection
+Connected to client ('127.0.0.1', 58980)
+Receiving file
+Waiting for client connection
+Connected to client ('127.0.0.1', 58983)
+Receiving file
+Waiting for client connection
+Connected to client ('127.0.0.1', 58985)
+Receiving file
+Waiting for client connection
+Connecting to server ('127.0.0.1', 5002)
+Connected to server ('127.0.0.1', 5002)
+Sending TRANSACTION file 755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json to client from node1/processed/755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json
+Sent TRANSACTION file 755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json to client from node1/processed/755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json
+---
+Sending BLOCK file 91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json to client from node1/blocks/91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json
+Sent BLOCK file 91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json to client from node1/blocks/91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json
+---
+Connecting to server ('127.0.0.1', 5003)
+Connected to server ('127.0.0.1', 5003)
+Sending TRANSACTION file 755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json to client from node1/processed/755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json
+Sent TRANSACTION file 755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json to client from node1/processed/755a588aab3ff73464515521688b0ebddf7408437cb7b3ac4e92984c38b9480b.json
+---
+Sending BLOCK file 91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json to client from node1/blocks/91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json
+Sent BLOCK file 91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json to client from node1/blocks/91d3e4a8bd6250dcec139bdd416e4fc903a56f7080309b39a52ca0f7d4e8259a.json
+---
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connecting to server ('127.0.0.1', 5002)
+Connected to server ('127.0.0.1', 5002)
+Sending TRANSACTION file e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json to client from node1/processed/e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json
+Sent TRANSACTION file e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json to client from node1/processed/e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json
+---
+Sending BLOCK file 22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json to client from node1/blocks/22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json
+Sent BLOCK file 22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json to client from node1/blocks/22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json
+---
+Connecting to server ('127.0.0.1', 5003)
+Connected to server ('127.0.0.1', 5003)
+Sending TRANSACTION file e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json to client from node1/processed/e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json
+Sent TRANSACTION file e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json to client from node1/processed/e6878b703331c5b3916b531cce3a970d46e05a44acb40167e4617c904de0581f.json
+---
+Sending BLOCK file 22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json to client from node1/blocks/22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json
+Sent BLOCK file 22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json to client from node1/blocks/22d966d13ce0cd2f2499c103bbb1a16df713d383a525ee195b762a4d133c0276.json
+---
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
