@@ -116,6 +116,9 @@ class Node:
         (coinbase/invalid transactions should not be shared with other nodes).
         """
 
+        # TODO: call solve_puzzle (Chantel)
+        # read PLAN.md for details
+
         current_time = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(current_time))
         body_list = []
@@ -306,3 +309,28 @@ class Node:
                 print()
         except KeyboardInterrupt:
             pass
+
+    def solve_puzzle(self):
+        # TODO: implement this (Chantel)
+        # read PLAN.md for details
+        pass
+
+    def check_for_competing_blocks(self):
+        # TODO: implement this (Hamid)
+        # read PLAN.md for details
+        pass
+
+    def accept_winning_block(self):
+        # TODO: implement this (Hamid)
+        # read PLAN.md for details
+        pass
+
+    def validate_block(self):
+        # TODO: implement this (Trey)
+        # read PLAN.md for details
+        pass
+
+    def pick_winning_block(self):
+        # TODO: implement this (Xavier)
+        # read PLAN.md for details
+        pass

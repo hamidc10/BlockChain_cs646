@@ -15,24 +15,22 @@ after running a few tests, you can see that:
 * node logs are printed in the node terminals showing transactions validated and blocks created
 * node socket logs are saved to socket.log file in node1, node2, node3 folders
 
-## Blockchain socket communication protocol
+## Changes from project 3
 
-For syncing transactions and blocks between nodes
+### How we are validating blocks
 
-Each block/transaction file is sent using the following 3-part message protocol:
+TODO: document this (Trey)
+read PLAN.md for details
 
-1. Send the file type as a message ("TRANSACTION" or "BLOCK")
-2. Send the file name as a message (so the client knows what to save it as)
-3. Send the file content as a message
+### How we are making nodes compete
 
-Each message is made up of 4 sends/receives on the socket:
+TODO: document this (Xavier)
+read PLAN.md for details
 
-1. The server sends the message size (so the client knows how big of a buffer to use)
-2. The client confirms that it received the message size
-3. The server sends the message content
-4. The client confirms that it received the message content
+### How we are handling/preventing forks
 
-Connection logs are printed and saved to log files.
+TODO: document this (Xavier)
+read PLAN.md for details
 
 ## Components
 
