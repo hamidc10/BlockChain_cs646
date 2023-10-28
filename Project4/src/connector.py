@@ -5,6 +5,7 @@
 
 import os
 import socket
+from typing import Tuple
 
 from src.constants import processed_transactions_folder, blocks_folder
 
@@ -155,10 +156,10 @@ class NodeConnector:
         self.log(f"Sent BLOCK file {file_name} to client from {file_path}")
         self.log("---")
 
-    def receive_file(self, server_socket: socket.socket) -> str:
+    def receive_file(self, server_socket: socket.socket) -> Tuple[str, str, bytes]:
         """
-        Receives and saves a transaction or block file from the server socket
-        and returns the file name without the .json suffix.
+        Receives a transaction or block file from the server socket
+        and returns the file type, name, and content.
         """
         self.log("Receiving file")
 
@@ -176,6 +177,13 @@ class NodeConnector:
         response = self.receive_message(server_socket)
         file_content = response
 
+        return file_type, file_name, file_content
+
+    def save_file(self, file_type, file_name, file_content) -> str:
+        """
+        Saves a transaction or block file and returns
+        the file name without the .json suffix.
+        """
         if file_type == "TRANSACTION":
             folder = self.processed_transactions_folder
         elif file_type == "BLOCK":
@@ -192,3 +200,11 @@ class NodeConnector:
         self.log("---")
 
         return file_name.removesuffix(".json")
+
+    def receive_and_save_file(self, server_socket: socket.socket) -> str:
+        """
+        Receives and saves a transaction or block file from the server socket
+        and returns the file name without the .json suffix.
+        """
+        file_type, file_name, file_content = self.receive_file(server_socket)
+        return self.save_file(file_type, file_name, file_content)

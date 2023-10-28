@@ -4,8 +4,6 @@
 # Date: 10/22/23
 
 import os
-import time
-import random
 
 from src.wallet import Wallet
 from src.constants import pending_transactions_folder
@@ -17,6 +15,12 @@ def main():
     wallet1 = Wallet("Wallet A")
     wallet2 = Wallet("Wallet B")
     wallet3 = Wallet("Wallet C")
+
+    pending_transaction_folders = [
+        os.path.join("node1", pending_transactions_folder),
+        os.path.join("node2", pending_transactions_folder),
+        os.path.join("node3", pending_transactions_folder),
+    ]
 
     print("Starting test simulation...")
     print(
@@ -55,15 +59,8 @@ def main():
             else:
                 to_address = other_wallets[1].address
             amount = input("Enter the amount you would like to send: ")
-            # Pick random node to validate transaction on blockchain
-            node_folder = random.choice(["node1", "node2", "node3"])
-            print(f"Randomly picked {node_folder} to process transaction")
-            transactions_folder = os.path.join(node_folder, pending_transactions_folder)
             # Create transaction with wallet
-            selected_wallet.send(to_address, int(amount), transactions_folder)
-            # Give some time for node to process transaction
-            print("Waiting 3 seconds for node to process transaction before moving on")
-            time.sleep(3)
+            selected_wallet.send(to_address, int(amount), pending_transaction_folders)
         elif choice == "2":
             balance = selected_wallet.check_balance()
             print(f"Your account balance ({selected_wallet.name}): {balance}")

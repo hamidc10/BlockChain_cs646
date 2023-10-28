@@ -5,6 +5,7 @@
 
 import os
 import hashlib
+from typing import List
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 
@@ -86,7 +87,7 @@ class Wallet:
             hashes.SHA256(),
         )
 
-    def send(self, to_address: str, amount: int, transactions_folder: str) -> str:
+    def send(self, to_address: str, amount: int, transaction_folders: List[str]) -> str:
         """
         Sends the specified amount to the user with the specified address through
         a transaction on the blockchain and returns the hash of the transaction.
@@ -97,7 +98,7 @@ class Wallet:
             amount,
             self.signature,
             self.public_key_file_path,
-            transactions_folder,
+            transaction_folders,
         )
 
     def create_coinbase(self, transactions_folder: str) -> str:
@@ -111,7 +112,7 @@ class Wallet:
             default_wallet_balance,
             self.signature,
             self.public_key_file_path,
-            transactions_folder,
+            [transactions_folder],
         )
 
     def check_balance(self, address: str = "") -> int:

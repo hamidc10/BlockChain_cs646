@@ -23,6 +23,6 @@ os.makedirs(os.path.join("test", processed_transactions_folder), exist_ok=True)
 
 connector = NodeConnector("test")
 server_socket = connector.connect_to_server_socket(5555)
-connector.receive_file(server_socket)
-connector.receive_file(server_socket)
+connector.receive_and_save_file(server_socket)
+connector.receive_and_save_file(server_socket)
 server_socket.close()

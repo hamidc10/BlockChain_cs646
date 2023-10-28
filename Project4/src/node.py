@@ -11,10 +11,10 @@ import json
 import hashlib
 import shutil
 
-from typing import List
+from typing import List, Tuple
 
 import hashlib
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization, hashes
 
 from src.account_state import update_account_state
@@ -40,6 +40,7 @@ class Node:
     other_node_socket_ports: List[int]
     transaction_hash_list: List[str]
     block_hash_list: List[str]
+    previous_block: dict
     wallet: Wallet
 
     def __init__(
@@ -82,15 +83,18 @@ class Node:
                 node_state = json.load(f)
             self.transaction_hash_list = node_state.get("transaction_hash_list", [])
             self.block_hash_list = node_state.get("block_hash_list", [])
+            self.previous_block = node_state.get("previous_block", {})
         else:
             self.transaction_hash_list = []
             self.block_hash_list = []
+            self.previous_block = {}
 
     def save_node_state(self):
         with open(self.node_state_file_path, "w+") as f:
             node_state = {
                 "transaction_hash_list": self.transaction_hash_list,
                 "block_hash_list": self.block_hash_list,
+                "previous_block": self.previous_block,
             }
             json.dump(node_state, f)
 
@@ -106,6 +110,56 @@ class Node:
                     other_nodes_are_ready = False
                 time.sleep(1)
         print("Other nodes are ready")
+
+    def validate_transaction(self, transaction: dict) -> bool:
+        # Prevent negative transactions
+        if transaction["Amount"] < 0:
+            print("Invalid transaction (amount cannot be negative); REJECTED")
+            return False
+
+        # Validate coinbase transactions
+        if transaction["From"] == coinbase_address:
+            if os.listdir(self.blocks_folder):  # Blocks folder not empty
+                print("Invalid coinbase (must be first): REJECTED")
+                return False
+            if transaction["Amount"] != default_wallet_balance:
+                print("Invalid coinbase (unexpected amount): REJECTED")
+                return False
+
+        # Validate sender balance (does not apply to coinbase)
+        else:
+            sender_balance = self.wallet.check_balance(transaction["From"])
+            if transaction["Amount"] > sender_balance:
+                print("Invalid transaction (sender does not have enough); REJECTED")
+                return False
+
+        # Validate transaction signature
+        # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
+        with open(transaction["PublicKeyFilePath"], "rb") as f:
+            public_key_bytes = f.read()
+        # We assume that this is the message of the signature:
+        # This is the same as the binary value of the sender address:
+        public_key_hash = hashlib.sha256(public_key_bytes)
+        # Importing the public key to an RSA object used for validation:
+        public_key = serialization.load_pem_public_key(public_key_bytes)
+        # Have to convert signature back from hexadecimal:
+        signature = bytes.fromhex(transaction["Signature"])
+        try:
+            public_key.verify(
+                signature,
+                public_key_hash.digest(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
+                hashes.SHA256(),
+            )
+            print("The transaction signature is valid: ACCEPTED")
+        except (ValueError, TypeError):
+            print("The transaction signature is not valid: REJECTED")
+            return False  # Invalid transactions should not be shared with other nodes
+
+        return True  # Valid
 
     def new_block(self, transaction_hash: str) -> str | None:
         """
@@ -134,54 +188,10 @@ class Node:
             body_dict = {"hash": transaction_hash, "content": json.loads(f.read())}
             body_list.append(body_dict)
 
+        # Validate transaction
         transaction = body_dict["content"]
-
-        # Prevent negative transactions
-        if transaction["Amount"] < 0:
-            print("Invalid transaction (amount cannot be negative); REJECTED")
+        if not self.validate_transaction(transaction):
             return None
-
-        # Validate coinbase transactions
-        if transaction["From"] == coinbase_address:
-            if os.listdir(self.blocks_folder):  # Blocks folder not empty
-                print("Invalid coinbase (must be first): REJECTED")
-                return None
-            if transaction["Amount"] != default_wallet_balance:
-                print("Invalid coinbase (unexpected amount): REJECTED")
-                return None
-
-        # Validate sender balance (does not apply to coinbase)
-        else:
-            sender_balance = self.wallet.check_balance(transaction["From"])
-            if transaction["Amount"] > sender_balance:
-                print("Invalid transaction (sender does not have enough); REJECTED")
-                return None
-
-        # Validate transaction signature
-        # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
-        with open(transaction["PublicKeyFilePath"], "rb") as f:
-            public_key_bytes = f.read()
-        # We assume that this is the message of the signature:
-        # This is the same as the binary value of the sender address:
-        public_key_hash = hashlib.sha256(public_key_bytes)
-        # Importing the public key to an RSA object used for validation:
-        public_key = serialization.load_pem_public_key(public_key_bytes)
-        # Have to convert signature back from hexadecimal:
-        signature = bytes.fromhex(transaction["Signature"])
-        try:
-            public_key.verify(
-                signature,
-                public_key_hash.digest(),
-                padding.PSS(
-                    mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH,
-                ),
-                hashes.SHA256(),
-            )
-            print("The transaction signature is valid: ACCEPTED")
-        except (ValueError, TypeError):
-            print("The transaction signature is not valid: REJECTED")
-            return None  # Invalid transactions should not be shared with other nodes
 
         self.transaction_hash_list.append(transaction_hash)
         height = self.transaction_hash_list.index(transaction_hash)
@@ -223,6 +233,7 @@ class Node:
             json.dump(block, new_block, indent=None)
 
         self.block_hash_list.append(block_name)
+        self.previous_block = block
 
         # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
         # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
@@ -237,7 +248,7 @@ class Node:
         # Update account state file with new balances
         update_account_state(transaction)
 
-        # Save updated node state (self.transaction_hash_list and self.block_hash_list)
+        # Save updated node state
         self.save_node_state()
 
         print("New Block:\n", json.dumps(block, indent=2))
@@ -246,65 +257,58 @@ class Node:
             return None  # Coinbases should not be shared with other nodes
         return block_name
 
-    def process_pending_transactions(self):
-        print("Processing pending transactions")
+    def process_first_pending_transaction(self):
         if os.path.exists(self.pending_transactions_folder):
-            pending_transaction_files = os.listdir(self.pending_transactions_folder)
+            pending_transaction_files = sorted(
+                os.listdir(self.pending_transactions_folder)
+            )
             if not pending_transaction_files:
-                print("No pending transactions found")
+                print("No pending transaction found")
             else:
-                for transaction_file_name in pending_transaction_files:
-                    transaction_hash = transaction_file_name.removesuffix(".json")
-                    block_name = self.new_block(transaction_hash)
-                    if block_name:
-                        block_file_name = block_name + ".json"
-                        block_file_path = os.path.join(
-                            self.blocks_folder, block_file_name
+                print("Processing pending transaction")
+                first_pending_transaction = pending_transaction_files[0]
+                transaction_hash = first_pending_transaction.removesuffix(".json")
+                block_name = self.new_block(transaction_hash)
+                if block_name:
+                    block_file_name = block_name + ".json"
+                    block_file_path = os.path.join(self.blocks_folder, block_file_name)
+                    for port in self.other_node_socket_ports:
+                        other_node_socket = self.connector.connect_to_server_socket(
+                            port
                         )
-                        transaction_file_path = os.path.join(
-                            self.processed_transactions_folder, transaction_file_name
+                        self.connector.send_block_file(
+                            other_node_socket,
+                            block_file_name,
+                            block_file_path,
                         )
-                        for port in self.other_node_socket_ports:
-                            other_node_socket = self.connector.connect_to_server_socket(
-                                port
-                            )
-                            self.connector.send_transaction_file(
-                                other_node_socket,
-                                transaction_file_name,
-                                transaction_file_path,
-                            )
-                            self.connector.send_block_file(
-                                other_node_socket,
-                                block_file_name,
-                                block_file_path,
-                            )
 
-    def receive_processed_transaction_and_block(self):
-        print("Checking for transactions/blocks from other nodes")
+    def receive_processed_block(self) -> Tuple[str, bytes]:
+        """
+        Checks for a processed block from another node and returns
+        the file name and file content if one is received.
+        Returns empty string if no block was received.
+        """
+        print("Checking for a processed block from another node")
         try:
             other_node_socket = self.connector.connect_to_client_socket(
                 self.node_socket
             )
-            # Receive transaction
-            transaction_hash = self.connector.receive_file(other_node_socket)
-            self.transaction_hash_list.append(transaction_hash)
             # Receive block
-            block_hash = self.connector.receive_file(other_node_socket)
-            self.block_hash_list.append(block_hash)
+            file_type, file_name, file_content = self.connector.receive_file(
+                other_node_socket
+            )
             # Close socket
             other_node_socket.close()
-            # Save updated node state (self.transaction_hash_list and self.block_hash_list)
-            self.save_node_state()
+            return file_name, file_content
         except:  # To ignore timeouts when nothing is being sent
             print("Received no new transactions from other nodes")
+            return "", b""
 
     def run(self):
         print("\nNode running\n")
         try:
             while True:
-                self.receive_processed_transaction_and_block()
-                time.sleep(1)
-                self.process_pending_transactions()
+                self.process_first_pending_transaction()
                 time.sleep(1)
                 print()
         except KeyboardInterrupt:

@@ -7,6 +7,7 @@ import os
 import json
 import datetime
 import hashlib
+from typing import List
 
 
 def new_transaction(
@@ -15,10 +16,10 @@ def new_transaction(
     amount: int,
     signature: bytes,
     public_key_file_path: str,
-    transactions_folder: str,
+    transaction_folders: List[str],
 ) -> str:
     """
-    Creates a transaction file with the given information in the pending folder
+    Creates a transaction file with the given information in the given folders
     and returns the hash of the created transaction.
     """
     current_time = datetime.datetime.now()
@@ -34,8 +35,9 @@ def new_transaction(
     data_str = str(data).replace(" ", "")
     data_hash = hashlib.sha256(data_str.encode("utf-8")).hexdigest()
     file_name = data_hash + ".json"
-    file_path = os.path.join(transactions_folder, file_name)
-    os.makedirs(transactions_folder, exist_ok=True)
-    with open(file_path, "w") as f:
-        json.dump(data, f, indent=None)
+    for folder in transaction_folders:
+        file_path = os.path.join(folder, file_name)
+        os.makedirs(folder, exist_ok=True)
+        with open(file_path, "w") as f:
+            json.dump(data, f, indent=None)
     return data_hash
