@@ -331,6 +331,13 @@ class Node:
 
     def validate_block(self):
         # TODO: implement this (Trey)
+    # validates transactions on block using validate transactions
+        if self.validate_transaction(): #need to find a way to implement this for all transactions on block
+            if self.calculated_hashroot == header_str:
+                if self.block_height == previous_block + 1:
+                    if self.block_hash == previous_blockhash - 1:
+                        return True
+        return False
         # read PLAN.md for details
         pass
 
