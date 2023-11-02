@@ -334,7 +334,17 @@ class Node:
         # read PLAN.md for details
         pass
 
-    def pick_winning_block(self):
+    def pick_winning_block(self, header, transactions, height):
         # TODO: implement this (Xavier)
         # read PLAN.md for details
+        
+        #given a list of block objects
+       self.Blockheader = header
+       self.Blocktransactions = transactions
+       self.Blockheight = height
+
+       block_list=[]
+       block_list.append(Node(header, transactions, height))
+        #return the block that has the smallest "Nonce" value in its header
+
         pass
