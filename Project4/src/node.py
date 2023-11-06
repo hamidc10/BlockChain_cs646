@@ -320,14 +320,37 @@ class Node:
         pass
 
     def check_for_competing_blocks(self):
-        # TODO: implement this (Hamid)
-        # read PLAN.md for details
-        pass
+        competing_blocks=[]
+        received=self.receive_processed_block()
+        for i in received:
+            if self.validate_block(i) == True:
+                competing_blocks.append(i)
+        return competing_blocks
+    
 
     def accept_winning_block(self):
-        # TODO: implement this (Hamid)
-        # read PLAN.md for details
-        pass
+        winner=self.pick_winning_block()
+        block=self.previous_block 
+        if not os.listdir(self.blocks_folder(winner)):
+            with open(os.path.join(self.blocks_folder, winner + ".json"), "w") as add_winner:
+                json.dump(add_winner, indent=None)
+    
+        self.block_hash_list.append(block)
+        self.save_node_state()
+        
+        # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
+        # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
+
+
+        # Was not clear on what the file was so I assume it was add_winner 
+        src_path2 = os.path.join(
+            self.pending_transactions_folder, add_winner + ".json"
+        )
+        dst_path2 = os.path.join(
+            self.processed_transactions_folder, add_winner + ".json"
+        )
+        shutil.move(src_path2, dst_path2)
+
 
     def validate_block(self):
         # TODO: implement this (Trey)
