@@ -331,6 +331,19 @@ class Node:
 
     def validate_block(self):
         # TODO: implement this (Trey)
+    # validates transactions on block using validate transactions
+
+        if self.validate_transaction(): #need to find a way to implement this for all transactions on block
+            calculated_hashroot = hashlib.sha256(body_str.encode("utf-8")).hexdigest()
+            if self.calculated_hashroot == header_str:
+                if self.block_height == previous_block + 1:
+                    if self.block_hash == previous_blockhash - 1:
+                        return True
+        return False
+    #need to calculate hash roots and make sure that they are equal to the header
+    #self block height must be equal to previous block height + 1
+    #block hash must be equal to the previous block hash - 1
+    # hope i did this right vira, couldnt find many examples
         # read PLAN.md for details
         pass
 
