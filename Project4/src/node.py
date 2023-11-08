@@ -10,6 +10,7 @@ import socket
 import json
 import hashlib
 import shutil
+from random import randrange
 
 from typing import List, Tuple
 
@@ -172,6 +173,10 @@ class Node:
 
         # TODO: call solve_puzzle (Chantel)
         # read PLAN.md for details
+        solved_puzzle = self.solve_puzzle()
+        if not solved_puzzle[0]:
+            return None
+        
 
         current_time = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(current_time))
@@ -217,6 +222,7 @@ class Node:
             "timestamp": timestamp,
             "previousblock": previousblock_hash,
             "hash": body_hash,
+            "nonce" : solved_puzzle[1]
         }
 
         header_str = str(header_dict)
@@ -315,9 +321,22 @@ class Node:
             pass
 
     def solve_puzzle(self):
-        # TODO: implement this (Chantel)
-        # read PLAN.md for details
-        pass
+        self.previous_block["Random"] = randrange(0,10)
+        nonce = 0
+        target = "0000"
+        while True:
+            if self.check_for_competing_blocks():
+                winning_block = self.pick_winning_block()
+                self.accept_winning_block(winning_block)
+                return (False, 0)
+            header = self.previous_block["header"]
+            header["nonce"] = nonce
+            self.previous_block["header"] = header
+            json_value = json.dumps(self.previous_block)
+            block_hash = hashlib.sha256(json_value.encode("utf-8")).hexdigest()
+            if str(block_hash)[0 : len(target)] == target:
+                return (True, nonce)
+            nonce = nonce + 1
 
     def check_for_competing_blocks(self):
         competing_blocks=[]
