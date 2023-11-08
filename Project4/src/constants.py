@@ -14,6 +14,7 @@ keys_folder = "keys"
 blocks_folder = "blocks"
 pending_transactions_folder = "pending"
 processed_transactions_folder = "processed"
+rejected_transactions_folder = "rejected"
 node_state_file_name = "node_state.json"
 
 account_state_file_path = "account_state.json"

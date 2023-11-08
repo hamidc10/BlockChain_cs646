@@ -19,18 +19,24 @@ after running a few tests, you can see that:
 
 ### How we are validating blocks
 
-TODO: document this (Trey)
-read PLAN.md for details
+* each block received from a different node is validated with the checks listed on Canvas
+* see the validate_block method in the node.py
 
 ### How we are making nodes compete
 
-TODO: document this (Xavier)
-read PLAN.md for details
+* new transactions are sent to each node's pending folder
+* proof of work puzzle logic is implemented in the Node class
+  * the node that solves the puzzle in the shortest amount of time / with the smallest nonce value wins and gets to mine the block
+  * the target is to generate a hash from the previous block that starts with one leading zero ("0")
+  * the target can be increased by editing the solve_puzzle method in node.py
 
 ### How we are handling/preventing forks
 
-TODO: document this (Xavier)
-read PLAN.md for details
+* each node continuously checks for competing blocks and abandons mining the current block if another node mined it faster
+* that way, there is a very low chance for forks to be created
+* each node will process the same transaction at the almost the same time
+* if multiple nodes finish mining and sending a block at the same time, only the one with the smallest nonce value will be kept
+* a random UUID is added to each node's version of the block in the puzzle algorithm to ensure they don't produce the same hashes / winning nonce values
 
 ## Components
 

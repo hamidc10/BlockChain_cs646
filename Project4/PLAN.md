@@ -61,7 +61,7 @@ other Node class changes:
 Node class `new_block` method changes:
 
 - call `self.solve_puzzle()` at the beginning
-- if result is True, we won the puzzle, continue creating block (+ set "Nonce" in header)
+- if result is True, we won the puzzle, continue creating block (+ set "nonce" in header)
 - if result is False, we lost the puzzle, abandon creating block (so return None early)
 
 Node class `solve_puzzle` method (NEW):
@@ -75,7 +75,7 @@ Node class `solve_puzzle` method (NEW):
       - return a tuple with False (to indicate that we lost) and 0
   - attempt to solve the puzzle with the current nonce value:
     - see video in TA corner
-    - using `self.previous_block`, set the block "Nonce" value to be the current nonce value
+    - using `self.previous_block`, set the block "nonce" value to be the current nonce value
     - take a hash of the block
     - if the hash starts with "0000" (target of 4 zeros), we have found a winning nonce value
       - return a tuple with True (to indicate that we won) and the winning nonce value
@@ -117,7 +117,7 @@ document validation of blocks in README
 Node class `pick_winning_block` method (NEW):
 
 - given a list of block objects
-- return the block that has the smallest "Nonce" value in its header
+- return the block that has the smallest "nonce" value in its header
 
 document other changes compared to project 3 in README:
 

@@ -10,11 +10,9 @@ import socket
 import json
 import hashlib
 import shutil
-from random import randrange
+from uuid import uuid4
+from typing import List, Dict, Tuple
 
-from typing import List, Tuple
-
-import hashlib
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization, hashes
 
@@ -24,6 +22,7 @@ from src.connector import NodeConnector
 from src.constants import (
     pending_transactions_folder,
     processed_transactions_folder,
+    rejected_transactions_folder,
     blocks_folder,
     node_state_file_name,
     coinbase_address,
@@ -34,6 +33,7 @@ from src.constants import (
 class Node:
     pending_transactions_folder: str
     processed_transactions_folder: str
+    rejected_transactions_folder: str
     blocks_folder: str
     node_state_file_path: str
     connector: NodeConnector
@@ -41,7 +41,7 @@ class Node:
     other_node_socket_ports: List[int]
     transaction_hash_list: List[str]
     block_hash_list: List[str]
-    previous_block: dict
+    previous_block: Dict
     wallet: Wallet
 
     def __init__(
@@ -56,10 +56,14 @@ class Node:
         self.processed_transactions_folder = os.path.join(
             folder, processed_transactions_folder
         )
+        self.rejected_transactions_folder = os.path.join(
+            folder, rejected_transactions_folder
+        )
         self.blocks_folder = os.path.join(folder, blocks_folder)
         self.node_state_file_path = os.path.join(folder, node_state_file_name)
         os.makedirs(self.pending_transactions_folder, exist_ok=True)
         os.makedirs(self.processed_transactions_folder, exist_ok=True)
+        os.makedirs(self.rejected_transactions_folder, exist_ok=True)
         os.makedirs(self.blocks_folder, exist_ok=True)
 
         self.connector = NodeConnector(folder)
@@ -107,35 +111,13 @@ class Node:
             for port in self.other_node_socket_ports:
                 try:
                     self.connector.connect_to_server_socket(port)
-                except:
+                except (ConnectionRefusedError, TimeoutError):
                     other_nodes_are_ready = False
                 time.sleep(1)
         print("Other nodes are ready")
 
-    def validate_transaction(self, transaction: dict) -> bool:
-        # Prevent negative transactions
-        if transaction["Amount"] < 0:
-            print("Invalid transaction (amount cannot be negative); REJECTED")
-            return False
-
-        # Validate coinbase transactions
-        if transaction["From"] == coinbase_address:
-            if os.listdir(self.blocks_folder):  # Blocks folder not empty
-                print("Invalid coinbase (must be first): REJECTED")
-                return False
-            if transaction["Amount"] != default_wallet_balance:
-                print("Invalid coinbase (unexpected amount): REJECTED")
-                return False
-
-        # Validate sender balance (does not apply to coinbase)
-        else:
-            sender_balance = self.wallet.check_balance(transaction["From"])
-            if transaction["Amount"] > sender_balance:
-                print("Invalid transaction (sender does not have enough); REJECTED")
-                return False
-
+    def validate_transaction_signature(self, transaction: Dict) -> bool:
         # Validate transaction signature
-        # https://pycryptodome.readthedocs.io/en/latest/src/signature/pkcs1_v1_5.html
         with open(transaction["PublicKeyFilePath"], "rb") as f:
             public_key_bytes = f.read()
         # We assume that this is the message of the signature:
@@ -162,6 +144,96 @@ class Node:
 
         return True  # Valid
 
+    def validate_transaction(self, transaction: Dict) -> bool:
+        """
+        Validates a transaction to be processed.
+        """
+        # Prevent negative transactions
+        if transaction["Amount"] < 0:
+            print("Invalid transaction (amount cannot be negative); REJECTED")
+            return False
+
+        # Validate coinbase transactions
+        if transaction["From"] == coinbase_address:
+            if os.listdir(self.blocks_folder):  # Blocks folder not empty
+                print("Invalid coinbase (must be first): REJECTED")
+                return False
+            if transaction["Amount"] != default_wallet_balance:
+                print("Invalid coinbase (unexpected amount): REJECTED")
+                return False
+
+        # Validate sender balance (does not apply to coinbase)
+        else:
+            sender_balance = self.wallet.check_balance(transaction["From"])
+            if transaction["Amount"] > sender_balance:
+                print("Invalid transaction (sender does not have enough); REJECTED")
+                return False
+
+        # Validate transaction signature
+        return self.validate_transaction_signature(transaction)
+
+    def validate_processed_transaction(self, transaction: Dict) -> bool:
+        """
+        Validates a transaction already processed by another node.
+        """
+        # Prevent negative transactions
+        if transaction["Amount"] < 0:
+            print("Invalid transaction (amount cannot be negative); REJECTED")
+            return False
+
+        # Validate transaction signature
+        return self.validate_transaction_signature(transaction)
+
+    def get_object_hash(self, obj: List | Dict) -> str:
+        s = json.dumps(obj, sort_keys=True)
+        return hashlib.sha256(s.encode()).hexdigest()
+
+    def get_block_name(self, block: Dict) -> str:
+        """
+        Returns the block header hash to be used as the block name.
+        """
+        return self.get_object_hash(block["header"])
+
+    def save_block(self, block: Dict) -> str:
+        """
+        Saves the given block as a JSON file in the blocks folder, sets it as the previous block,
+        adds it's header hash to the block hash list, and returns the block header hash.
+        """
+        block_name = self.get_block_name(block)
+        with open(os.path.join(self.blocks_folder, block_name + ".json"), "w") as f:
+            json.dump(block, f, sort_keys=True)
+        self.block_hash_list.append(block_name)
+        self.previous_block = block
+        return block_name
+
+    def move_processed_transaction(self, block: Dict):
+        """
+        Moves the transaction associated with the given block
+        from the pending folder to the processed folder.
+        """
+        transaction_hash = block["body"][0]["hash"]
+        # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
+        # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
+        src_path = os.path.join(
+            self.pending_transactions_folder, transaction_hash + ".json"
+        )
+        dst_path = os.path.join(
+            self.processed_transactions_folder, transaction_hash + ".json"
+        )
+        shutil.move(src_path, dst_path)
+
+    def move_rejected_transaction(self, transaction_hash: str):
+        """
+        Moves the given transaction from the pending folder to the rejected folder.
+        """
+        src_path = os.path.join(
+            self.pending_transactions_folder, transaction_hash + ".json"
+        )
+        dst_path = os.path.join(
+            self.rejected_transactions_folder, transaction_hash + ".json"
+        )
+        shutil.move(src_path, dst_path)
+
     def new_block(self, transaction_hash: str) -> str | None:
         """
         Receives the file_name that is to be added to the block.
@@ -171,13 +243,24 @@ class Node:
         (coinbase/invalid transactions should not be shared with other nodes).
         """
 
-        # TODO: call solve_puzzle (Chantel)
-        # read PLAN.md for details
-        solved_puzzle = self.solve_puzzle()
-        if not solved_puzzle[0]:
-            return None
-        
+        # Read transaction file
+        with open(
+            os.path.join(self.pending_transactions_folder, transaction_hash + ".json"),
+            "r",
+        ) as f:
+            transaction = json.load(f)
 
+        # Validate transaction
+        if not self.validate_transaction(transaction):
+            self.move_rejected_transaction(transaction_hash)
+            return None
+
+        # Attempt to solve puzzle in order to mine block
+        solved_puzzle, winning_nonce = self.solve_puzzle()
+        if not solved_puzzle:
+            return None
+
+        # Starting mining block
         current_time = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(current_time))
         body_list = []
@@ -186,17 +269,8 @@ class Node:
         # https://www.geeksforgeeks.org/how-to-read-dictionary-from-file-in-python/
 
         # Creating the body for the block based on the current transaction.
-        with open(
-            os.path.join(self.pending_transactions_folder, transaction_hash + ".json"),
-            "r",
-        ) as f:
-            body_dict = {"hash": transaction_hash, "content": json.loads(f.read())}
-            body_list.append(body_dict)
-
-        # Validate transaction
-        transaction = body_dict["content"]
-        if not self.validate_transaction(transaction):
-            return None
+        body_dict = {"hash": transaction_hash, "content": transaction}
+        body_list.append(body_dict)
 
         self.transaction_hash_list.append(transaction_hash)
         height = self.transaction_hash_list.index(transaction_hash)
@@ -212,9 +286,8 @@ class Node:
                 body = json.loads(b.read())
                 body_list.append(body["body"][0])
 
-        body_str = str(body_list)
-        body_str = body_str.replace(" ", "")
-        body_hash = hashlib.sha256(body_str.encode("utf-8")).hexdigest()
+        # Get body hash
+        body_hash = self.get_object_hash(body_list)
 
         # Creating header based on project specifications.
         header_dict = {
@@ -222,34 +295,17 @@ class Node:
             "timestamp": timestamp,
             "previousblock": previousblock_hash,
             "hash": body_hash,
-            "nonce" : solved_puzzle[1]
+            "nonce" : winning_nonce
         }
 
-        header_str = str(header_dict)
-        header_str = header_str.replace(" ", "")
-
-        # The file name for the block is the hash of the header.
-        block_name = hashlib.sha256(header_str.encode("utf-8")).hexdigest()
-
+        # Create block object
         block = {"header": header_dict, "body": body_list}
 
-        with open(
-            os.path.join(self.blocks_folder, block_name + ".json"), "w"
-        ) as new_block:
-            json.dump(block, new_block, indent=None)
+        # Save block file
+        block_name = self.save_block(block)
 
-        self.block_hash_list.append(block_name)
-        self.previous_block = block
-
-        # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
-        # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
-        src_path = os.path.join(
-            self.pending_transactions_folder, transaction_hash + ".json"
-        )
-        dst_path = os.path.join(
-            self.processed_transactions_folder, transaction_hash + ".json"
-        )
-        shutil.move(src_path, dst_path)
+        # Mark transaction as processed
+        self.move_processed_transaction(block)
 
         # Update account state file with new balances
         update_account_state(transaction)
@@ -257,7 +313,7 @@ class Node:
         # Save updated node state
         self.save_node_state()
 
-        print("New Block:\n", json.dumps(block, indent=2))
+        print("New Block:\n", json.dumps(block, indent=2, sort_keys=True))
 
         if transaction["From"] == coinbase_address:
             return None  # Coinbases should not be shared with other nodes
@@ -288,11 +344,9 @@ class Node:
                             block_file_path,
                         )
 
-    def receive_processed_block(self) -> Tuple[str, bytes]:
+    def receive_processed_block(self) -> Dict | None:
         """
-        Checks for a processed block from another node and returns
-        the file name and file content if one is received.
-        Returns empty string if no block was received.
+        Checks for a processed block from another node and returns one if received.
         """
         print("Checking for a processed block from another node")
         try:
@@ -305,101 +359,119 @@ class Node:
             )
             # Close socket
             other_node_socket.close()
-            return file_name, file_content
-        except:  # To ignore timeouts when nothing is being sent
+            return json.loads(file_content)
+        except (ConnectionResetError, TimeoutError, ValueError):
+            # To ignore timeouts when nothing is being sent
             print("Received no new transactions from other nodes")
-            return "", b""
+            return None
+
+    def solve_puzzle(self) -> Tuple[bool, int]:
+        """
+        Attempts to solve the puzzle to mine the next block,
+        following the algorithm shown in the TA corner video.
+        Returns True and the winning nonce value if this node solved the puzzle first.
+        Returns False if the another node solved the puzzle first, and handles
+        acceptance of the winning block from the other node in this case as well.
+        """
+        # Add empty header object for coinbase case
+        if not self.previous_block.get("header"):
+            self.previous_block["header"] = {}
+
+        # Prevent all nodes from generating the same hashes
+        self.previous_block["Random"] = uuid4().hex
+
+        nonce = 0
+        target = "0"
+        while True:
+            competing_blocks = self.check_for_competing_blocks()
+            if competing_blocks:
+                print("Lost puzzle challenge; accepting block from winning node...")
+                winning_block = self.pick_winning_block(competing_blocks)
+                self.accept_winning_block(winning_block)
+                return False, 0
+            self.previous_block["header"]["nonce"] = nonce
+            json_value = json.dumps(self.previous_block, sort_keys=True)
+            block_hash = hashlib.sha256(json_value.encode()).hexdigest()
+            print(f"Attempting puzzle: nonce={nonce} hash={block_hash}")
+            if block_hash[0 : len(target)] == target:
+                print("Won puzzle challenge; mining block...")
+                return True, nonce
+            nonce += 1
+
+    def check_for_competing_blocks(self) -> List[Dict]:
+        """
+        Returns a list of competing blocks mined by other nodes.
+        """
+        print("Checking for competing blocks mined by other nodes...")
+        competing_blocks = []
+        block = self.receive_processed_block()
+        if block and self.validate_block(block):
+            competing_blocks.append(block)
+        return competing_blocks
+
+    def accept_winning_block(self, block: Dict):
+        """
+        Saves the given block, marks the associated transaction as processed,
+        and updates the node's state.
+        """
+        self.save_block(block)
+        self.move_processed_transaction(block)
+        self.save_node_state()
+
+
+    def validate_block(self, block: Dict) -> bool:
+        """
+        Validates the block using the checks listed in Canvas.
+        -- Nodes validate all the transaction in the block
+        -- Nodes validate that the calculated hash root matches what is included in the header
+        -- Nodes validate that the block height is 1 block higher than the previous block
+        -- Nodes validate that the previous block hash matches a block (that was previously validated) that has the current height - 1
+        """
+        print("Validating block from other node...")
+
+        for transaction in block["body"]:
+            if not self.validate_processed_transaction(transaction["content"]):
+                print("Invalid block transaction; REJECTED")
+                return False
+
+        if block["header"]["hash"] != self.get_object_hash(block["body"]):
+            print("Invalid block hash; REJECTED")
+            return False
+
+        if block["header"]["height"] != (self.previous_block["header"]["height"] + 1):
+            print("Invalid block height; REJECTED")
+            return False
+
+        # Note: blocks with height=1 have previous blocks as coinbase of other node and hashes will not match
+        if block["header"]["height"] > 1 and block["header"]["previousblock"] != self.block_hash_list[-1]:
+            print("Invalid previous block; REJECTED")
+            return False
+
+        print("Block is valid; ACCEPTED")
+        return True
+
+    def pick_winning_block(self, blocks: List[Dict]) -> Dict:
+        """
+        Returns the block with the smallest nonce value.
+        """
+        smallest_nonce = -1
+        winning_block = {}
+        for block in blocks:
+            nonce = block["header"]["nonce"]
+            if smallest_nonce == -1:
+                smallest_nonce = nonce
+                winning_block = block
+            elif nonce < smallest_nonce:
+                smallest_nonce = nonce
+                winning_block = block
+        return winning_block
 
     def run(self):
         print("\nNode running\n")
         try:
             while True:
                 self.process_first_pending_transaction()
-                time.sleep(1)
+                time.sleep(2)
                 print()
         except KeyboardInterrupt:
             pass
-
-    def solve_puzzle(self):
-        self.previous_block["Random"] = randrange(0,10)
-        nonce = 0
-        target = "0000"
-        while True:
-            if self.check_for_competing_blocks():
-                winning_block = self.pick_winning_block()
-                self.accept_winning_block(winning_block)
-                return (False, 0)
-            header = self.previous_block["header"]
-            header["nonce"] = nonce
-            self.previous_block["header"] = header
-            json_value = json.dumps(self.previous_block)
-            block_hash = hashlib.sha256(json_value.encode("utf-8")).hexdigest()
-            if str(block_hash)[0 : len(target)] == target:
-                return (True, nonce)
-            nonce = nonce + 1
-
-    def check_for_competing_blocks(self):
-        competing_blocks=[]
-        received=self.receive_processed_block()
-        for i in received:
-            if self.validate_block(i) == True:
-                competing_blocks.append(i)
-        return competing_blocks
-    
-
-    def accept_winning_block(self):
-        winner=self.pick_winning_block()
-        block=self.previous_block 
-        if not os.listdir(self.blocks_folder(winner)):
-            with open(os.path.join(self.blocks_folder, winner + ".json"), "w") as add_winner:
-                json.dump(add_winner, indent=None)
-    
-        self.block_hash_list.append(block)
-        self.save_node_state()
-        
-        # Moving the processed transaction file into the processed folder and deleting the file from the pending folder.
-        # https://www.geeksforgeeks.org/how-to-move-all-files-from-one-directory-to-another-using-python/
-
-
-        # Was not clear on what the file was so I assume it was add_winner 
-        src_path2 = os.path.join(
-            self.pending_transactions_folder, add_winner + ".json"
-        )
-        dst_path2 = os.path.join(
-            self.processed_transactions_folder, add_winner + ".json"
-        )
-        shutil.move(src_path2, dst_path2)
-
-
-    def validate_block(self):
-        # TODO: implement this (Trey)
-    # validates transactions on block using validate transactions
-
-        if self.validate_transaction(): #need to find a way to implement this for all transactions on block
-            calculated_hashroot = hashlib.sha256(body_str.encode("utf-8")).hexdigest()
-            if self.calculated_hashroot == header_str:
-                if self.block_height == previous_block + 1:
-                    if self.block_hash == previous_blockhash - 1:
-                        return True
-        return False
-    #need to calculate hash roots and make sure that they are equal to the header
-    #self block height must be equal to previous block height + 1
-    #block hash must be equal to the previous block hash - 1
-    # hope i did this right vira, couldnt find many examples
-        # read PLAN.md for details
-        pass
-
-    def pick_winning_block(self, header, transactions, height):
-        # TODO: implement this (Xavier)
-        # read PLAN.md for details
-        
-        #given a list of block objects
-       self.Blockheader = header
-       self.Blocktransactions = transactions
-       self.Blockheight = height
-
-       block_list=[]
-       block_list.append(Node(header, transactions, height))
-        #return the block that has the smallest "Nonce" value in its header
-
-        pass
