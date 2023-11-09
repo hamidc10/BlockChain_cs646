@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-rm -f *.json
+# Script to reset nodes / delete all transactions and blocks
+
+rm -f ./*.json
 
 rm -rf node1/*.log
 rm -rf node1/*.json

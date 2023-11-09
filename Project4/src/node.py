@@ -331,6 +331,10 @@ class Node:
         return block_name
 
     def send_block_and_handle_forks(self, block_name: str):
+        """
+        This function is very important, especially the fork logic.
+        Unfortunately it turns out forks are impossible to prevent.
+        """
         block_file_name = block_name + ".json"
         block_file_path = os.path.join(self.blocks_folder, block_file_name)
 
@@ -365,9 +369,10 @@ class Node:
                 #    They won't accept our connections until a new transaction comes in
                 #    In this case, we need to handle the fork by:
                 #    - Abandon our block and fetch blocks from another node
-                print("\nFORK!!!\n")
+                print("Encountered FORK")
                 competing_blocks = self.check_for_competing_blocks(fork=True)
                 if competing_blocks:
+                    print("Fork is due to two nodes finishing mining at the same time; picking winner")
                     candidate_blocks = [block] + competing_blocks
                     winning_block = self.pick_winning_block(candidate_blocks)
 
@@ -379,13 +384,40 @@ class Node:
                     self.accept_winning_block(winning_block)
                     return
                 else:
-                    # TODO: Pick node with the most blocks
-                    for folder in self.other_node_folders:
-                        pass
+                    print("Fork is due to this node falling behind; syncing blocks from another node")
+                    # Pick node with the most blocks
+                    most_blocks = -1
+                    node_with_most_blocks = ""
+                    for node in self.other_node_folders:
+                        num_blocks = len(os.listdir(os.path.join(node, blocks_folder)))
+                        if most_blocks == -1 or num_blocks > most_blocks:
+                            most_blocks = num_blocks
+                            node_with_most_blocks = node
 
-                    # TODO: Abandon our block and fetch blocks from other node
+                    # Abandon our block and fetch blocks from other node
                     # Replace state file
                     # Replace blocks/ pending/ processed/ rejected/
+                    if node_with_most_blocks:
+                        os.remove(self.node_state_file_path)
+                        shutil.rmtree(self.blocks_folder)
+                        shutil.rmtree(self.pending_transactions_folder)
+                        shutil.rmtree(self.processed_transactions_folder)
+                        shutil.rmtree(self.rejected_transactions_folder)
+
+                        new_node_state_file_path = os.path.join(node_with_most_blocks, node_state_file_name)
+                        new_blocks_folder = os.path.join(node_with_most_blocks, blocks_folder)
+                        new_pending_folder = os.path.join(node_with_most_blocks, pending_transactions_folder)
+                        new_processed_folder = os.path.join(node_with_most_blocks, processed_transactions_folder)
+                        new_rejected_folder = os.path.join(node_with_most_blocks, rejected_transactions_folder)
+
+                        shutil.copy(new_node_state_file_path, self.node_state_file_path)
+                        shutil.copytree(new_blocks_folder, self.blocks_folder)
+                        shutil.copytree(new_pending_folder, self.pending_transactions_folder)
+                        shutil.copytree(new_processed_folder, self.processed_transactions_folder)
+                        shutil.copytree(new_rejected_folder, self.rejected_transactions_folder)
+
+                        self.load_node_state() # Update state from new state file
+                    return
 
     def process_first_pending_transaction(self):
         print("Checking for pending transactions")

@@ -11,7 +11,7 @@ from src.connector import NodeConnector
 This is a test of connector.py, which sends/receives a block file and a transaction file.
 
 To test:
-1. Open side-by-side terminals from the Project3 folder
+1. Open side-by-side terminals from the Project4 folder
 2. Run python3 -m src.test_connector_server in one terminal
 3. Run python3 -m src.test_connector_client in the other terminal
 4. See the files saved in the test folder
