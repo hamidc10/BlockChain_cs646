@@ -319,9 +319,6 @@ class Node:
         # Mark transaction as processed
         self.move_processed_transaction(block)
 
-        # Update account state file with new balances
-        update_account_state(transaction)
-
         # Save updated node state
         self.save_node_state()
 
@@ -352,6 +349,8 @@ class Node:
                         block_file_name,
                         block_file_path,
                     )
+                # Update account state file with new balances
+                update_account_state(block["body"][0]["content"])
                 return
             except connection_errors:
                 # If sending fails, it means we have hit a fork

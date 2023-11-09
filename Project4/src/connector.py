@@ -29,6 +29,7 @@ Connection logs are printed and saved to log files.
 """
 
 connection_errors = (
+    BrokenPipeError,
     ConnectionResetError,
     ConnectionRefusedError,
     TimeoutError,

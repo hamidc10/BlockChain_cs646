@@ -56,6 +56,11 @@
     and they won't accept our connections until a new transaction comes. In this case, we need to handle the fork by:
     * Abandon our block and fetch blocks from another node
 
+## Known problems
+
+* Sometimes the account state is slightly inaccurate because two nodes might finish mining a block at the same time and both update the account state
+* We have minimized this issue as much as possible, but it is not perfect all the time
+
 ## Components
 
 ### Account state file
