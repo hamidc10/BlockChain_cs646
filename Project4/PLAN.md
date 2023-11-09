@@ -13,7 +13,9 @@
 - we can make each node continuously check for competing blocks and abandon mining the current block if another node mined it faster
 - that way, there is a very low chance for forks to be created
 - each node will process the same transaction at the almost the same time
+- a random value should be added to each node's version of the block in the puzzle algorithm to ensure they don't produce the same hashes / winning nonce values
 - if multiple nodes finish mining and sending a block at the same time, only the one with the smallest nonce value will be kept
+- if multiple blocks are tied with the smallest nonce value, the block with the first alphabetically sorted block hash wins
 
 ### validating blocks from other nodes
 
@@ -66,7 +68,7 @@ Node class `new_block` method changes:
 
 Node class `solve_puzzle` method (NEW):
 
-- set a random number value in `self.previous_block` to prevent previous block hashes from being identical for all nodes
+- set a random value in `self.previous_block` to prevent previous block hashes from being identical for all nodes
 - initialize a nonce value at 0
 - in a while loop:
   - first check for competing blocks from other nodes:
@@ -117,7 +119,10 @@ document validation of blocks in README
 Node class `pick_winning_block` method (NEW):
 
 - given a list of block objects
-- return the block that has the smallest "nonce" value in its header
+- group blocks by nonce value
+- put the blocks with the smallest nonce value into a candidates list
+- sort the candidates by block hash
+- return the candidate with the least block hash (the first element after sorting)
 
 document other changes compared to project 3 in README:
 

@@ -28,6 +28,7 @@ Each message is made up of 4 sends/receives on the socket:
 Connection logs are printed and saved to log files.
 """
 
+connection_errors = (ConnectionResetError, ConnectionRefusedError, TimeoutError, ValueError)
 
 # Class for connecting nodes and sending transactions and blocks between them.
 class NodeConnector:
@@ -45,7 +46,6 @@ class NodeConnector:
     ### LOG FUNCTIONS
 
     def log(self, message: str):
-        print(message)
         with open(self.log_file_name, "a") as f:
             f.write(message + "\n")
 
@@ -64,6 +64,7 @@ class NodeConnector:
         server_address = ("127.0.0.1", port)
         self.log(f"Connecting to server {server_address}")
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.settimeout(5)
         server_socket.connect(server_address)
         self.log(f"Connected to server {server_address}")
         return server_socket
@@ -71,7 +72,7 @@ class NodeConnector:
     def connect_to_client_socket(self, server_socket: socket.socket) -> socket.socket:
         # set timeout to keep it from hanging forever:
         # https://stackoverflow.com/questions/7354476/python-socket-object-accept-time-out
-        server_socket.settimeout(1)
+        server_socket.settimeout(0.5)
         self.log(f"Waiting for client connection")
         client_socket, client_address = server_socket.accept()
         self.log(f"Connected to client {client_address}")
@@ -161,21 +162,20 @@ class NodeConnector:
         Receives a transaction or block file from the server socket
         and returns the file type, name, and content.
         """
-        self.log("Receiving file")
 
         # receive file type
         response = self.receive_message(server_socket)
         file_type = response.decode()
-        self.log(f"File type: {file_type}")
 
         # receive file name
         response = self.receive_message(server_socket)
         file_name = response.decode()
-        self.log(f"File name: {file_name}")
 
         # receive file content
         response = self.receive_message(server_socket)
         file_content = response
+
+        self.log(f"Received file: type={file_type} name={file_name}")
 
         return file_type, file_name, file_content
 

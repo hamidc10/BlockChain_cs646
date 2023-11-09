@@ -10,6 +10,7 @@
 after running a few tests, you can see that:
 
 * coinbases are created for each node
+* nodes compete to mine blocks from created transactions
 * transactions and blocks are synced between nodes (in node1, node2, node3 folders)
 * account state for nodes and test wallets is updated (account_state.json)
 * node logs are printed in the node terminals showing transactions validated and blocks created
@@ -35,8 +36,9 @@ after running a few tests, you can see that:
 * each node continuously checks for competing blocks and abandons mining the current block if another node mined it faster
 * that way, there is a very low chance for forks to be created
 * each node will process the same transaction at the almost the same time
-* if multiple nodes finish mining and sending a block at the same time, only the one with the smallest nonce value will be kept
 * a random UUID is added to each node's version of the block in the puzzle algorithm to ensure they don't produce the same hashes / winning nonce values
+* if multiple nodes finish mining and sending a block at the same time, only the one with the smallest nonce value will be kept
+* if multiple blocks are tied with the smallest nonce value, the block with the first alphabetically sorted block hash wins
 
 ## Components
 

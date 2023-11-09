@@ -18,7 +18,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 
 from src.account_state import update_account_state
 from src.wallet import Wallet
-from src.connector import NodeConnector
+from src.connector import NodeConnector, connection_errors
 from src.constants import (
     pending_transactions_folder,
     processed_transactions_folder,
@@ -38,6 +38,7 @@ class Node:
     node_state_file_path: str
     connector: NodeConnector
     node_socket: socket.socket
+    other_node_folders: List[str]
     other_node_socket_ports: List[int]
     transaction_hash_list: List[str]
     block_hash_list: List[str]
@@ -48,6 +49,7 @@ class Node:
         self,
         folder: str,
         socket_port: int,
+        other_node_folders: List[str],
         other_node_socket_ports: List[int],
     ):
         self.pending_transactions_folder = os.path.join(
@@ -68,6 +70,7 @@ class Node:
 
         self.connector = NodeConnector(folder)
         self.node_socket = self.connector.open_server_socket(socket_port)
+        self.other_node_folders = other_node_folders
         self.other_node_socket_ports = other_node_socket_ports
 
         # Set self.transaction_hash_list and self.block_hash_list
@@ -77,8 +80,9 @@ class Node:
         self.wallet = Wallet(folder)  # For creating coinbase
         if not os.listdir(self.blocks_folder):  # Blocks folder empty
             # Create coinbase
-            print("Creating coinbase")
-            self.wallet.create_coinbase(self.pending_transactions_folder)
+            print("Creating coinbase transaction")
+            transaction_hash = self.wallet.create_coinbase(self.pending_transactions_folder)
+            self.new_block(transaction_hash)
         else:
             print("Coinbase already created")
 
@@ -111,7 +115,7 @@ class Node:
             for port in self.other_node_socket_ports:
                 try:
                     self.connector.connect_to_server_socket(port)
-                except (ConnectionRefusedError, TimeoutError):
+                except connection_errors:
                     other_nodes_are_ready = False
                 time.sleep(1)
         print("Other nodes are ready")
@@ -128,18 +132,16 @@ class Node:
         # Have to convert signature back from hexadecimal:
         signature = bytes.fromhex(transaction["Signature"])
         try:
-            public_key.verify(
+            public_key.verify( # type: ignore
                 signature,
                 public_key_hash.digest(),
-                padding.PSS(
+                padding.PSS( # type: ignore
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH,
                 ),
-                hashes.SHA256(),
+                hashes.SHA256(), # type: ignore
             )
-            print("The transaction signature is valid: ACCEPTED")
         except (ValueError, TypeError):
-            print("The transaction signature is not valid: REJECTED")
             return False  # Invalid transactions should not be shared with other nodes
 
         return True  # Valid
@@ -150,7 +152,7 @@ class Node:
         """
         # Prevent negative transactions
         if transaction["Amount"] < 0:
-            print("Invalid transaction (amount cannot be negative); REJECTED")
+            print("Invalid transaction (amount cannot be negative): REJECTED")
             return False
 
         # Validate coinbase transactions
@@ -166,11 +168,17 @@ class Node:
         else:
             sender_balance = self.wallet.check_balance(transaction["From"])
             if transaction["Amount"] > sender_balance:
-                print("Invalid transaction (sender does not have enough); REJECTED")
+                print("Invalid transaction (sender does not have enough): REJECTED")
                 return False
 
         # Validate transaction signature
-        return self.validate_transaction_signature(transaction)
+        if self.validate_transaction_signature(transaction):
+            print("The transaction signature is valid: ACCEPTED")
+            return True
+        else:
+            print("The transaction signature is not valid: REJECTED")
+            return False
+
 
     def validate_processed_transaction(self, transaction: Dict) -> bool:
         """
@@ -178,7 +186,6 @@ class Node:
         """
         # Prevent negative transactions
         if transaction["Amount"] < 0:
-            print("Invalid transaction (amount cannot be negative); REJECTED")
             return False
 
         # Validate transaction signature
@@ -217,10 +224,11 @@ class Node:
         src_path = os.path.join(
             self.pending_transactions_folder, transaction_hash + ".json"
         )
-        dst_path = os.path.join(
-            self.processed_transactions_folder, transaction_hash + ".json"
-        )
-        shutil.move(src_path, dst_path)
+        if os.path.exists(src_path):
+            dst_path = os.path.join(
+                self.processed_transactions_folder, transaction_hash + ".json"
+            )
+            shutil.move(src_path, dst_path)
 
     def move_rejected_transaction(self, transaction_hash: str):
         """
@@ -255,10 +263,13 @@ class Node:
             self.move_rejected_transaction(transaction_hash)
             return None
 
-        # Attempt to solve puzzle in order to mine block
-        solved_puzzle, winning_nonce = self.solve_puzzle()
-        if not solved_puzzle:
-            return None
+        # If transaction is not a coinbase, attempt to solve puzzle in order to mine block
+        # (coinbases are not shared so they don't require a puzzle)
+        nonce = -1
+        if transaction["From"] != coinbase_address:
+            solved_puzzle, nonce = self.solve_puzzle()
+            if not solved_puzzle:
+                return None
 
         # Starting mining block
         current_time = datetime.datetime.now()
@@ -295,7 +306,7 @@ class Node:
             "timestamp": timestamp,
             "previousblock": previousblock_hash,
             "hash": body_hash,
-            "nonce" : winning_nonce
+            "nonce" : nonce
         }
 
         # Create block object
@@ -319,7 +330,65 @@ class Node:
             return None  # Coinbases should not be shared with other nodes
         return block_name
 
+    def send_block_and_handle_forks(self, block_name: str):
+        block_file_name = block_name + ".json"
+        block_file_path = os.path.join(self.blocks_folder, block_file_name)
+
+        with open(block_file_path, "r") as f:
+            block = json.load(f)
+
+        while True:
+            # Try to send our block to the other nodes
+            try:
+                for port in self.other_node_socket_ports:
+                    other_node_socket = self.connector.connect_to_server_socket(port)
+                    self.connector.send_block_file(
+                        other_node_socket,
+                        block_file_name,
+                        block_file_path,
+                    )
+                return
+            except connection_errors:
+                # If sending fails, it means we have hit a fork
+                # There are two possible reasons for a fork:
+                # 1. Another node is trying to send to us at the same time
+                #    In this case, we need to handle the fork by:
+                #    - Receive blocks from the other nodes
+                #    - Pick the winning block from all of the received blocks and our own
+                #    - If the winning block is ours, try sending it to the other nodes again
+                #    - If the winning block is not ours:
+                #      - Delete our block file
+                #      - Remove our block hash from our hash list
+                #      - Accept the winning block
+                # 2. We have fallen behind all the other nodes
+                #    They have finished processing all pending blocks (for now)
+                #    They won't accept our connections until a new transaction comes in
+                #    In this case, we need to handle the fork by:
+                #    - Abandon our block and fetch blocks from another node
+                print("\nFORK!!!\n")
+                competing_blocks = self.check_for_competing_blocks(fork=True)
+                if competing_blocks:
+                    candidate_blocks = [block] + competing_blocks
+                    winning_block = self.pick_winning_block(candidate_blocks)
+
+                    if winning_block["header"]["hash"] == block["header"]["hash"]:
+                        continue
+
+                    os.remove(block_file_path)
+                    self.block_hash_list.pop()
+                    self.accept_winning_block(winning_block)
+                    return
+                else:
+                    # TODO: Pick node with the most blocks
+                    for folder in self.other_node_folders:
+                        pass
+
+                    # TODO: Abandon our block and fetch blocks from other node
+                    # Replace state file
+                    # Replace blocks/ pending/ processed/ rejected/
+
     def process_first_pending_transaction(self):
+        print("Checking for pending transactions")
         if os.path.exists(self.pending_transactions_folder):
             pending_transaction_files = sorted(
                 os.listdir(self.pending_transactions_folder)
@@ -332,23 +401,12 @@ class Node:
                 transaction_hash = first_pending_transaction.removesuffix(".json")
                 block_name = self.new_block(transaction_hash)
                 if block_name:
-                    block_file_name = block_name + ".json"
-                    block_file_path = os.path.join(self.blocks_folder, block_file_name)
-                    for port in self.other_node_socket_ports:
-                        other_node_socket = self.connector.connect_to_server_socket(
-                            port
-                        )
-                        self.connector.send_block_file(
-                            other_node_socket,
-                            block_file_name,
-                            block_file_path,
-                        )
+                    self.send_block_and_handle_forks(block_name)
 
     def receive_processed_block(self) -> Dict | None:
         """
         Checks for a processed block from another node and returns one if received.
         """
-        print("Checking for a processed block from another node")
         try:
             other_node_socket = self.connector.connect_to_client_socket(
                 self.node_socket
@@ -360,7 +418,7 @@ class Node:
             # Close socket
             other_node_socket.close()
             return json.loads(file_content)
-        except (ConnectionResetError, TimeoutError, ValueError):
+        except connection_errors:
             # To ignore timeouts when nothing is being sent
             print("Received no new transactions from other nodes")
             return None
@@ -385,7 +443,7 @@ class Node:
         while True:
             competing_blocks = self.check_for_competing_blocks()
             if competing_blocks:
-                print("Lost puzzle challenge; accepting block from winning node...")
+                print("Lost puzzle challenge; accepting block from winning node")
                 winning_block = self.pick_winning_block(competing_blocks)
                 self.accept_winning_block(winning_block)
                 return False, 0
@@ -394,19 +452,20 @@ class Node:
             block_hash = hashlib.sha256(json_value.encode()).hexdigest()
             print(f"Attempting puzzle: nonce={nonce} hash={block_hash}")
             if block_hash[0 : len(target)] == target:
-                print("Won puzzle challenge; mining block...")
+                print("Won puzzle challenge; mining block")
                 return True, nonce
             nonce += 1
 
-    def check_for_competing_blocks(self) -> List[Dict]:
+    def check_for_competing_blocks(self, fork: bool = False) -> List[Dict]:
         """
         Returns a list of competing blocks mined by other nodes.
         """
-        print("Checking for competing blocks mined by other nodes...")
+        print("Checking for competing blocks mined by other nodes")
         competing_blocks = []
-        block = self.receive_processed_block()
-        if block and self.validate_block(block):
-            competing_blocks.append(block)
+        for port in self.other_node_socket_ports:
+            block = self.receive_processed_block()
+            if block and self.validate_block(block, fork):
+                competing_blocks.append(block)
         return competing_blocks
 
     def accept_winning_block(self, block: Dict):
@@ -418,60 +477,78 @@ class Node:
         self.move_processed_transaction(block)
         self.save_node_state()
 
-
-    def validate_block(self, block: Dict) -> bool:
+    def validate_block(self, block: Dict, fork: bool = False) -> bool:
         """
         Validates the block using the checks listed in Canvas.
         -- Nodes validate all the transaction in the block
         -- Nodes validate that the calculated hash root matches what is included in the header
-        -- Nodes validate that the block height is 1 block higher than the previous block
+        -- Nodes validate that the block height is 1 block higher than the previous block (if not fork) or the same as the previous block (if fork)
         -- Nodes validate that the previous block hash matches a block (that was previously validated) that has the current height - 1
         """
-        print("Validating block from other node...")
+        print("Validating block from other node")
 
         for transaction in block["body"]:
             if not self.validate_processed_transaction(transaction["content"]):
-                print("Invalid block transaction; REJECTED")
+                print("Invalid block transaction: REJECTED")
                 return False
 
         if block["header"]["hash"] != self.get_object_hash(block["body"]):
-            print("Invalid block hash; REJECTED")
+            print("Invalid block hash: REJECTED")
             return False
 
-        if block["header"]["height"] != (self.previous_block["header"]["height"] + 1):
-            print("Invalid block height; REJECTED")
+        if fork:
+            expected_height = self.previous_block["header"]["height"]
+        else:
+            expected_height = self.previous_block["header"]["height"] + 1
+
+        if block["header"]["height"] != expected_height:
+            print("Invalid block height: REJECTED")
             return False
 
         # Note: blocks with height=1 have previous blocks as coinbase of other node and hashes will not match
         if block["header"]["height"] > 1 and block["header"]["previousblock"] != self.block_hash_list[-1]:
-            print("Invalid previous block; REJECTED")
+            print("Invalid previous block: REJECTED")
             return False
 
-        print("Block is valid; ACCEPTED")
+        print("Block is valid: ACCEPTED")
         return True
 
     def pick_winning_block(self, blocks: List[Dict]) -> Dict:
         """
         Returns the block with the smallest nonce value.
+        If multiple blocks are tied with the smallest nonce value,
+        the block with the first alphabetically sorted block hash wins.
         """
         smallest_nonce = -1
-        winning_block = {}
+        blocks_by_nonce: Dict[int, List[Dict]] = {}
         for block in blocks:
+            # Get nonce
             nonce = block["header"]["nonce"]
+
+            # Group block
+            if nonce in blocks_by_nonce:
+                blocks_by_nonce[nonce].append(block)
+            else:
+                blocks_by_nonce[nonce] = [block]
+
+            # Update smallest nonce
             if smallest_nonce == -1:
                 smallest_nonce = nonce
-                winning_block = block
             elif nonce < smallest_nonce:
                 smallest_nonce = nonce
-                winning_block = block
-        return winning_block
+
+        # Sort candidates by block hash
+        get_block_hash = lambda block: block["header"]["hash"]
+        candidates = blocks_by_nonce[smallest_nonce]
+        sorted_candidates = sorted(candidates, key=get_block_hash)
+        winner = sorted_candidates[0]
+        return winner
 
     def run(self):
-        print("\nNode running\n")
+        print("Node running")
         try:
             while True:
                 self.process_first_pending_transaction()
                 time.sleep(2)
-                print()
         except KeyboardInterrupt:
             pass

@@ -4,6 +4,7 @@ from src.constants import node1_port, node2_port, node3_port
 node1 = Node(
     folder="node1",
     socket_port=node1_port,
+    other_node_folders=["node2", "node3"],
     other_node_socket_ports=[node2_port, node3_port],
 )
 node1.run()
