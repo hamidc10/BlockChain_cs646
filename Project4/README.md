@@ -14,6 +14,8 @@
 * Node socket logs are saved to `socket.log` in each of the node folders
 * Wallet balances are stored in `account_state.json`
 
+Note: you can run `reset.sh` to reset the nodes / delete all transactions and blocks (start over)
+
 ## Changes from project 3
 
 ### How we are validating blocks
