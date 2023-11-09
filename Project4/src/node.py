@@ -81,7 +81,9 @@ class Node:
         if not os.listdir(self.blocks_folder):  # Blocks folder empty
             # Create coinbase
             print("Creating coinbase transaction")
-            transaction_hash = self.wallet.create_coinbase(self.pending_transactions_folder)
+            transaction_hash = self.wallet.create_coinbase(
+                self.pending_transactions_folder
+            )
             self.new_block(transaction_hash)
         else:
             print("Coinbase already created")
@@ -132,14 +134,14 @@ class Node:
         # Have to convert signature back from hexadecimal:
         signature = bytes.fromhex(transaction["Signature"])
         try:
-            public_key.verify( # type: ignore
+            public_key.verify(  # type: ignore
                 signature,
                 public_key_hash.digest(),
-                padding.PSS( # type: ignore
+                padding.PSS(  # type: ignore
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH,
                 ),
-                hashes.SHA256(), # type: ignore
+                hashes.SHA256(),  # type: ignore
             )
         except (ValueError, TypeError):
             return False  # Invalid transactions should not be shared with other nodes
@@ -178,7 +180,6 @@ class Node:
         else:
             print("The transaction signature is not valid: REJECTED")
             return False
-
 
     def validate_processed_transaction(self, transaction: Dict) -> bool:
         """
@@ -306,7 +307,7 @@ class Node:
             "timestamp": timestamp,
             "previousblock": previousblock_hash,
             "hash": body_hash,
-            "nonce" : nonce
+            "nonce": nonce,
         }
 
         # Create block object
@@ -372,7 +373,9 @@ class Node:
                 print("Encountered FORK")
                 competing_blocks = self.check_for_competing_blocks(fork=True)
                 if competing_blocks:
-                    print("Fork is due to two nodes finishing mining at the same time; picking winner")
+                    print(
+                        "Fork is due to two nodes finishing mining at the same time; picking winner"
+                    )
                     candidate_blocks = [block] + competing_blocks
                     winning_block = self.pick_winning_block(candidate_blocks)
 
@@ -384,7 +387,9 @@ class Node:
                     self.accept_winning_block(winning_block)
                     return
                 else:
-                    print("Fork is due to this node falling behind; syncing blocks from another node")
+                    print(
+                        "Fork is due to this node falling behind; syncing blocks from another node"
+                    )
                     # Pick node with the most blocks
                     most_blocks = -1
                     node_with_most_blocks = ""
@@ -404,19 +409,35 @@ class Node:
                         shutil.rmtree(self.processed_transactions_folder)
                         shutil.rmtree(self.rejected_transactions_folder)
 
-                        new_node_state_file_path = os.path.join(node_with_most_blocks, node_state_file_name)
-                        new_blocks_folder = os.path.join(node_with_most_blocks, blocks_folder)
-                        new_pending_folder = os.path.join(node_with_most_blocks, pending_transactions_folder)
-                        new_processed_folder = os.path.join(node_with_most_blocks, processed_transactions_folder)
-                        new_rejected_folder = os.path.join(node_with_most_blocks, rejected_transactions_folder)
+                        new_node_state_file_path = os.path.join(
+                            node_with_most_blocks, node_state_file_name
+                        )
+                        new_blocks_folder = os.path.join(
+                            node_with_most_blocks, blocks_folder
+                        )
+                        new_pending_folder = os.path.join(
+                            node_with_most_blocks, pending_transactions_folder
+                        )
+                        new_processed_folder = os.path.join(
+                            node_with_most_blocks, processed_transactions_folder
+                        )
+                        new_rejected_folder = os.path.join(
+                            node_with_most_blocks, rejected_transactions_folder
+                        )
 
                         shutil.copy(new_node_state_file_path, self.node_state_file_path)
                         shutil.copytree(new_blocks_folder, self.blocks_folder)
-                        shutil.copytree(new_pending_folder, self.pending_transactions_folder)
-                        shutil.copytree(new_processed_folder, self.processed_transactions_folder)
-                        shutil.copytree(new_rejected_folder, self.rejected_transactions_folder)
+                        shutil.copytree(
+                            new_pending_folder, self.pending_transactions_folder
+                        )
+                        shutil.copytree(
+                            new_processed_folder, self.processed_transactions_folder
+                        )
+                        shutil.copytree(
+                            new_rejected_folder, self.rejected_transactions_folder
+                        )
 
-                        self.load_node_state() # Update state from new state file
+                        self.load_node_state()  # Update state from new state file
                     return
 
     def process_first_pending_transaction(self):
@@ -538,7 +559,10 @@ class Node:
             return False
 
         # Note: blocks with height=1 have previous blocks as coinbase of other node and hashes will not match
-        if block["header"]["height"] > 1 and block["header"]["previousblock"] != self.block_hash_list[-1]:
+        if (
+            block["header"]["height"] > 1
+            and block["header"]["previousblock"] != self.block_hash_list[-1]
+        ):
             print("Invalid previous block: REJECTED")
             return False
 

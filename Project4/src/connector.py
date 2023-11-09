@@ -28,7 +28,13 @@ Each message is made up of 4 sends/receives on the socket:
 Connection logs are printed and saved to log files.
 """
 
-connection_errors = (ConnectionResetError, ConnectionRefusedError, TimeoutError, ValueError)
+connection_errors = (
+    ConnectionResetError,
+    ConnectionRefusedError,
+    TimeoutError,
+    ValueError,
+)
+
 
 # Class for connecting nodes and sending transactions and blocks between them.
 class NodeConnector:
