@@ -1,0 +1,294 @@
+Opening server socket ('127.0.0.1', 5002)
+Opened server socket ('127.0.0.1', 5002)
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Connecting to server ('127.0.0.1', 5003)
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Connecting to server ('127.0.0.1', 5003)
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Connecting to server ('127.0.0.1', 5003)
+Connected to server ('127.0.0.1', 5003)
+Waiting for client connection
+Connected to client ('127.0.0.1', 57284)
+Waiting for client connection
+Connected to client ('127.0.0.1', 57289)
+Waiting for client connection
+Connected to client ('127.0.0.1', 57291)
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57295)
+Received file: type=BLOCK name=ef81f94e57d476d8dfa17b5077c9a6710fae76b1f54943f23cb341baf7f45ca1.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57297)
+Received file: type=BLOCK name=d6a8727cccaeef34ea306711b95aaa1b11ae2b87e9beb03b9d7e2c11ca4dd502.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Sending BLOCK file 247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json to client from node2/blocks/247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json
+Sent BLOCK file 247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json to client from node2/blocks/247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json
+---
+Connecting to server ('127.0.0.1', 5003)
+Connected to server ('127.0.0.1', 5003)
+Sending BLOCK file 247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json to client from node2/blocks/247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json
+Sent BLOCK file 247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json to client from node2/blocks/247a6755e870d58378a47dbdbd2ea534f0ef689fe724fb30e0c6cd3d55eddeb7.json
+---
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57301)
+Received file: type=BLOCK name=041fdc2dd379b30ce514a9f98f8953642404321cf6c132121b0a5fea7e8bab85.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57302)
+Received file: type=BLOCK name=29d7e04b082fc23b558ebb96dee9f2c18c38f79a7373de4f8b5e7a6ff1215b64.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57305)
+Received file: type=BLOCK name=7d3c05ea388758ee7971fdd551de91e1d2334e76aec79a7ba14f78d6c4199ccc.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57306)
+Received file: type=BLOCK name=7c6499ab5627694c6e31d0563e64addda8a2dd47956f2c090c43230607e953d0.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57309)
+Received file: type=BLOCK name=9a4a987321107d914dc03e31d6096ee04121540f187be0541e5f88ef275979e4.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57310)
+Received file: type=BLOCK name=424ea7e906bdd01b2365b6d6ed7a1c6ba0a05d26d5fd2419719329eb5aadc370.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57312)
+Received file: type=BLOCK name=b15ca25b19b1048ffedafdee7af9a4947d6cf76cee89e7b3d44ab545fd5cb674.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57315)
+Received file: type=BLOCK name=6f7a802313dc6e1b0b28ae832e6e722132c56f6037d8afb4af9844835e732765.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connected to client ('127.0.0.1', 57316)
+Received file: type=BLOCK name=b0f521d9ee2be14be9aca63519a95886189f0b1418202a15009390160e6cb983.json
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Waiting for client connection
+Connecting to server ('127.0.0.1', 5001)
+Connected to server ('127.0.0.1', 5001)
+Sending BLOCK file e4584816f3127201bdf74e8c4623abcabe9d610ca667828aed91cca7263e3303.json to client from node2/blocks/e4584816f3127201bdf74e8c4623abcabe9d610ca667828aed91cca7263e3303.json
+Waiting for client connection
+Waiting for client connection
