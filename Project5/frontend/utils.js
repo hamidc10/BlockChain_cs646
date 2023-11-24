@@ -471,6 +471,7 @@ async function mint(){
     contract = new myweb3.eth.Contract(erc20ABI, erc20contract);
     // var value = web3.utils.toWei("1200", "ether");
     // 10000000000000000
+	console.log("Mint")
     var val = 10000000000000000
      await contract.methods.mint(1).send({"from":account, "value":val})
 }
@@ -494,6 +495,7 @@ function updatePage(){
     var text = element.value;
     var element2 = document.getElementById("myspan");
     element2.innerText=text
+	console.log("Update")
 }
 
 async function updateMaxSize(){
