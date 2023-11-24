@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!-- Used to help with text area - https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_textarea_readonly -->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>HUH? NFT's Home page</title>
+        <link rel="icon" href="cat_4.jpg">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="static/style.css">
+        <script type="text/javascript" src="web3min.js"></script>
+        <script type="text/javascript" src="utils.js"></script>
+    </head>
+
+    <nav role="options">
+        <div id="hamburger_menu">
+            <input type="checkbox" />
+            <span></span>
+            <span></span>
+            <span></span>
+            <ul id="home">
+                <li><a href="profile.html">Profile</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    
+    <body>
+        <h1>Welcome to HUH Nft's</h1>
+        <p> This is a project for our CS 646 class to help us demonstrate our ability to program a Smart Contract / Distributed Application.<br>
+            The idea of HUH Nft's is based of the popular HUH cat meme that is around. There are 7 current Nft's that have been created that you can buy.</p>
+        <div class="NFT_token">
+            <div>
+                <h2 class="t_1_title">Future HUH?</h2>
+                <textarea class="t_1_sum"  readonly > This cat traveled far and wide to explain why. This cat lead people wondering how his Ironman-ish suit helps him travel through time to answer why. </textarea>
+                <img class="t_1" src="./NFT's/nft_huh_1.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+                <!-- style="display:none;" -->
+            </div>
+            <div>
+                <h2 class="t_1_title">Fantasy HUH?</h2>
+                <textarea class="t_1_sum"  readonly> This cat is puzzled in this mystical land.Yarn tree's and milk rivers the dream for any cat. You can say this is purr-fect. </textarea>
+                <img class="t_1" src="./NFT's/nft_huh_2.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+            </div>
+            <div>
+                <h2 class="t_1_title">Wasteland HUH?</h2>
+                <textarea class="t_1_sum"  readonly> This cat has survied the nuclear war. After the H-bomb was deployed little was remaining. Hopefully he can find some milk soon. </textarea>
+                <img class="t_1" src="./NFT's/nft_huh_3.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+            </div>
+            <div>
+                <h2 class="t_1_title">War HUH?</h2>
+                <textarea class="t_1_sum"  readonly> This cat was drafted fighting for his country. After the great milk war started only he can help stop this battle for the golden cow. </textarea>
+                <img class="t_1" src="./NFT's/nft_huh_4.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+            </div>
+            <div>
+                <h2 class="t_1_title">Cowboy HUH?</h2>
+                <textarea class="t_1_sum"  readonly> This cat just here for a fun time. Protecting those he loves from the Cat-nip gang. Using his yarn lasso he will protect the town. </textarea>
+                <img class="t_1" src="./NFT's/nft_huh_5.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+            </div>
+            <div>
+                <h2 class="t_1_title">Artist HUH?</h2>
+                <textarea class="t_1_sum"  readonly> This is the art connoisseur. Collecting art from all over the world. Here he is admiring his Italian art in the west-wing of his home.  </textarea>
+                <img class="t_1" src="./NFT's/nft_huh_6.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+            </div>
+            <div>
+                <h2 class="t_1_title">Golden HUH?</h2>
+                <textarea class="t_1_sum"  readonly> This is the Golden cat. The cat has the midas touch. Here he is surrounded by wealth that he has been able to collect so far, wanting to add more.</textarea>
+                <img class="t_1" src="./NFT's/nft_huh_7.png" style="width:250px;height:250px;">
+                <button onclick="displayalert();mint();updatePage()">Purchase Here</button>
+            </div>
+            
+            
+        </div>     
+        
+        
+    </body>
+    
+</html>
